@@ -121,18 +121,18 @@ function nextBatch(){const pool=Q.filter(q=>S.picked.includes(secOf(q))&&inLv(q)
 function vQuiz(){const z=S.quiz;
  if(!z){const pool=Q.filter(q=>S.picked.includes(secOf(q))&&inLv(q));const done=pool.filter(q=>S.seen.includes(q.id)).length;const chs=[...new Set(C.map(c=>c.ch))];
   app.innerHTML=`<h1>MC 練習</h1><p class="mute sm">先揀程度，再揀範圍。每批最多 ${BATCH} 題，題目同選項次序都會隨機。</p>
-  <div class="lv" role="group" aria-label="程度">${[['簡單','直接考教材重點'],['正常','考理解同應用']].map(l=>`<button data-act="level" data-lv="${l[0]}" aria-pressed="${S.level===l[0]}">${l[0]}（${Q.filter(q=>q.level===l[0]).length} 題）<small>${l[1]}</small></button>`).join('')}</div>
-  <div><button class="btn ghost small" data-act="pick-all">全選</button><button class="btn ghost small" data-act="pick-none">清除</button></div>
+  <h2 style="margin-top:14px">① 揀程度</h2><div class="lv" role="group" aria-label="程度">${[['簡單','直接考教材重點'],['正常','考理解同應用']].map(l=>`<button data-act="level" data-lv="${l[0]}" aria-pressed="${S.level===l[0]}">${l[0]}（${Q.filter(q=>q.level===l[0]).length} 題）<small>${l[1]}</small></button>`).join('')}</div>
+  <h2>② 揀範圍</h2><div><button class="btn ghost small" data-act="pick-all">全選</button><button class="btn ghost small" data-act="pick-none">清除</button></div>
   ${chs.map(ch=>`<h3>${esc(ch)}</h3>`+C.filter(c=>c.ch===ch).map(c=>{const n=Q.filter(q=>secOf(q)===c.title&&inLv(q)).length;return `<button class="chip" data-act="pick" data-sec="${esc(c.title)}" aria-pressed="${S.picked.includes(c.title)}">${esc(c.title)} ${n}</button>`}).join('')).join('')}
   <div class="card" style="position:sticky;bottom:calc(66px + env(safe-area-inset-bottom));box-shadow:0 -4px 14px rgba(0,0,0,.12)"><div class="row"><span>已選 ${pool.length} 題</span><span class="mute sm">做過 ${done} 題</span></div><div class="bar"><i style="width:${pool.length?done/pool.length*100:0}%"></i></div>
   <button class="btn" data-act="start" ${pool.length?'':'disabled'} style="margin-bottom:0">開始 ${Math.min(BATCH,pool.length)} 題</button></div>`;return}
  if(z.i>=z.ids.length){const pct=Math.round(z.score/z.ids.length*100);const wrongs=z.results.filter(r=>!r.ok);
   app.innerHTML=`<h1>${z.mode==='wrong'?'錯題重做完成':'呢批做完'}</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.ids.length}</div><p class="mute">${pct}% 正確</p></div>
   ${wrongs.length?`<h2>今批做錯 ${wrongs.length} 題（已記入錯題本）</h2>`+wrongs.map(r=>`<div class="card sm"><strong>${esc(byId[r.id].question)}</strong><br>答案：${esc(byId[r.id].options[L.indexOf(byId[r.id].answer)])}<br><span class="mute">${esc(byId[r.id].page)}</span></div>`).join(''):''}
-  ${z.mode==='batch'?'<button class="btn" data-act="more">刷新下一批題目</button>':''}
+  ${z.mode==='batch'?`<button class="btn" data-act="more">刷新下一批題目（${esc(S.level)}）</button><button class="btn ghost" data-act="swap-level">轉做「${S.level==='簡單'?'正常':'簡單'}」程度</button>`:''}
   <button class="btn ghost" data-act="quit">${z.mode==='batch'?'返回揀範圍':'返回錯題本'}</button>`;return}
  const q=byId[z.ids[z.i]],ai=L.indexOf(q.answer),a=z.ans,fl=S.flags[q.id];
- app.innerHTML=`<div class="row"><span class="mute sm">第 ${z.i+1} / ${z.ids.length} 題${z.mode==='wrong'?'（錯題）':''}</span><button class="flag" data-act="quit">結束</button></div><div class="bar"><i style="width:${z.i/z.ids.length*100}%"></i></div>
+ app.innerHTML=`<div class="row"><span class="mute sm">第 ${z.i+1} / ${z.ids.length} 題${z.mode==='wrong'?'（錯題）':`｜${esc(S.level)}程度`}</span><button class="flag" data-act="quit">結束</button></div><div class="bar"><i style="width:${z.i/z.ids.length*100}%"></i></div>
  <p class="mute sm" style="margin-bottom:2px">${esc(q.chapter.replace('｜',' ｜ '))}<span class="pill">${esc(q.level)}</span></p><p style="font-weight:600;font-size:1.08rem;margin-top:2px">${esc(q.question)}</p>
  ${z.order.map((oi,pos)=>{const k=L[oi];let cls='';let why='';if(a!==null){if(oi===ai)cls='ok';else if(oi===a)cls='bad';why=oi===ai?'':(q.explanation.wrong[k]||'')}
   return `<button class="opt ${cls}" data-act="ans" data-o="${oi}" ${a!==null?'disabled':''}><span class="l">${L[pos]}</span><span>${esc(q.options[oi])}${why?`<span class="why">✗ ${esc(why)}</span>`:''}</span></button>`}).join('')}
@@ -164,6 +164,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
  case'fc-prev':S.fc.i--;S.fc.flip=false;render();break;
  case'fc-shuffle':S.fc=null;render();break;
  case'pick':{const s=b.dataset.sec;S.picked=S.picked.includes(s)?S.picked.filter(x=>x!==s):[...S.picked,s];store.set('picked',S.picked);render();break}
+ case'swap-level':S.level=S.level==='簡單'?'正常':'簡單';store.set('level',S.level);nextBatch();break;
  case'level':S.level=b.dataset.lv;store.set('level',S.level);render();break;
  case'pick-all':S.picked=C.map(c=>c.title);store.set('picked',S.picked);render();break;
  case'pick-none':S.picked=[];store.set('picked',S.picked);render();break;
