@@ -63,6 +63,9 @@ select{font:inherit;width:100%;min-height:46px;padding:8px;border-radius:8px;bor
 .pill{display:inline-block;font-size:.75rem;border-radius:6px;padding:1px 7px;background:var(--soft);color:var(--accent);margin-left:6px;vertical-align:middle}
 nav button{min-width:0;padding:0 2px}
 .home{display:grid;gap:10px}.home button{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.home b{font-size:1.8rem;font-weight:400;line-height:1}.home strong{display:block;font-size:1.08rem}.home small{display:block;color:var(--mute);font-size:.86rem}
+.home b{flex:none;width:48px;height:48px;border-radius:12px;background:#0f6b63;display:grid;place-items:center}.home svg{width:28px;height:28px}
+.home .hot{background:#b34a08;border-color:#b34a08;color:#fff;min-height:92px}.home .hot small{color:#fff}.home .hot b{background:#8a3704}
+nav{background:#0f5a53;border-top:0}nav button,nav button[aria-current=page]{color:#fff}nav button b{height:26px}nav button[aria-current=page]{background:#093f3a;box-shadow:inset 0 3px #fff}nav button:focus-visible{outline-color:#fff;outline-offset:-4px}
 .ff{display:block;margin:8px 0;min-width:0}.ff span{display:block;font-size:.82rem;color:var(--mute)}.ff input{width:100%;font:inherit;min-height:46px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);opacity:1}.ff input:focus{outline:3px solid var(--accent)}.ff input.ok{border-color:var(--ok);background:var(--ok-bg)}.ff input.bad{border-color:var(--bad);background:var(--bad-bg)}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:10px 0}.tw table{border-collapse:collapse;font-size:.78rem;line-height:1.35}.tw th,.tw td{border:1px solid var(--line);padding:5px 7px;white-space:nowrap;text-align:left;height:28px}.tw th{white-space:normal;font-weight:600}
@@ -86,9 +89,11 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const app=document.getElementById('app');
 
+const IC={home:'<path d="M3 11l9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/>',study:'<path d="M12 6C10 4.500 7 4 3 4v14c4 0 7 .5 9 2 2-1.500 5-2 9-2V4c-4 0-7 .5-9 2zM12 6v14"/>',cards:'<rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 7V5a2 2 0 012-2h10a2 2 0 012 2v9a2 2 0 01-2 2h-2"/>',quiz:'<path d="M4 20l1-4.500L16.500 4 20 7.500 8.500 19zM14 6.500L17.500 10"/>',form:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.500h6V4M9 10h6M9 13.500h6M9 17h4"/>',wrong:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 9l6 6M15 9l-6 6"/>',flags:'<path d="M5 22V3M5 4h13l-3 4.500 3 4.500H5"/>'};
+const ic=k=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 function nav(){const w=Object.keys(S.wrong).length,f=Object.keys(S.flags).length;
- const tabs=[['home','🏠','首頁'],['study','📖','溫習'],['cards','🗂','字卡'],['quiz','✏️','練習'],['form','📋','填表'],['wrong','📕','錯題',w],['flags','🚩','標記',f]];
- document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" ${S.tab===t[0]?'aria-current="page"':''}><b aria-hidden="true">${t[1]}</b>${t[2]}${t[3]?`<span class="badge">${t[3]}</span>`:''}</button>`).join('')}
+ const tabs=[['home','首頁'],['study','溫習'],['cards','字卡'],['quiz','練習'],['form','填表'],['wrong','錯題',w],['flags','標記',f]];
+ document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" ${S.tab===t[0]?'aria-current="page"':''}><b aria-hidden="true">${ic(t[0])}</b>${t[1]}${t[2]?`<span class="badge">${t[2]}</span>`:''}</button>`).join('')}
 function render(){nav();({home:vHome,form:vForm,study:vStudy,cards:vCards,quiz:vQuiz,wrong:vWrong,flags:vFlags})[S.tab]()}
 function toTop(){window.scrollTo(0,0)}
 
@@ -145,7 +150,7 @@ function vQuiz(){const z=S.quiz;
  ${a!==null?`<div class="res ${a===ai?'ok':'bad'}"><strong>${a===ai?'✓ 答啱':'✗ 答錯'}</strong>${esc(q.explanation.correct)}<div class="mute sm" style="margin-top:6px">出處：${esc(q.chapter.replace('｜',' ｜ '))}，${esc(q.page)}</div></div>
  <button class="btn" data-act="next">${z.i+1<z.ids.length?'下一題':'睇結果'}</button>`:''}
  ${flagBlock(q.id,fl)}`}
-function flagBlock(id,fl){return `<div><button class="flag ${fl?'on':''}" data-act="flag" data-id="${id}">🚩 ${fl?'已標記（撳嚟改）':'呢題有問題'}</button>${S.flagOpen===id?`<div class="card"><label class="sm" for="fn">有咩問題？（可以留空）</label><textarea id="fn" placeholder="例如：第二個選項都啱">${esc(fl?fl.note:'')}</textarea><button class="btn small" data-act="flag-save" data-id="${id}">儲存標記</button>${fl?`<button class="btn ghost small" data-act="flag-del" data-id="${id}">取消標記</button>`:''}</div>`:''}</div>`}
+function flagBlock(id,fl){return `<div><button class="flag ${fl?'on':''}" data-act="flag" data-id="${id}">${fl?'已標記（撳嚟改）':'呢題有問題'}</button>${S.flagOpen===id?`<div class="card"><label class="sm" for="fn">有咩問題？（可以留空）</label><textarea id="fn" placeholder="例如：第二個選項都啱">${esc(fl?fl.note:'')}</textarea><button class="btn small" data-act="flag-save" data-id="${id}">儲存標記</button>${fl?`<button class="btn ghost small" data-act="flag-del" data-id="${id}">取消標記</button>`:''}</div>`:''}</div>`}
 
 /* 錯題 */
 function vWrong(){const ids=Object.keys(S.wrong).filter(i=>byId[i]);
@@ -192,8 +197,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
 /* ===== 首頁 ===== */
 function vHome(){
  const w=Object.keys(S.wrong).filter(i=>byId[i]).length,f=Object.keys(S.flags).filter(i=>byId[i]).length;
- const T=[['study','📖','溫習','各章重點、關鍵名詞、實務試重點'],['cards','🗂','字卡','撳一下反轉，背重點'],['quiz','✏️','MC 練習','簡單／正常兩個程度，每批 30 題'],['form','📋','填表練習','出入量記錄表 I&O Chart（p136–141）'],['wrong','📕','錯題本',w?`有 ${w} 題要重做`:'答錯嘅題目會記喺度'],['flags','🚩','標記',f?`有 ${f} 題有問題`:'覺得有問題嘅題目']];
- app.innerHTML=`<h1>PCA 溫習（正式教材）</h1><p class="mute sm">《醫護支援人員護理技巧 II 基礎證書》　揀你想溫嘅部分：</p><div class="home">${T.map(t=>`<button data-tab="${t[0]}"><b aria-hidden="true">${t[1]}</b><span><strong>${t[2]}</strong><small>${t[3]}</small></span></button>`).join('')}</div>`}
+ const T=[['form','填表練習','出入量記錄表 I&O Chart（p136–141）'],['study','溫習','各章重點、關鍵名詞、實務試重點'],['cards','字卡','撳一下反轉，背重點'],['quiz','MC 練習','簡單／正常兩個程度，每批 30 題'],['wrong','錯題本',w?`有 ${w} 題要重做`:'答錯嘅題目會記喺度'],['flags','標記',f?`有 ${f} 題有問題`:'覺得有問題嘅題目']];
+ app.innerHTML=`<h1>PCA 溫習（正式教材）</h1><p class="mute sm">《醫護支援人員護理技巧 II 基礎證書》　揀你想溫嘅部分：</p><div class="home">${T.map(t=>`<button data-tab="${t[0]}" class="${t[0]==='form'?'hot':''}"><b aria-hidden="true">${ic(t[0])}</b><span><strong>${t[1]}</strong><small>${t[2]}</small></span></button>`).join('')}</div>`}
 
 /* ===== 填表練習 ===== */
 const rnd=a=>a[Math.random()*a.length|0];
