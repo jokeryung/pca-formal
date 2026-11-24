@@ -247,13 +247,14 @@ function randCase(){
  return{title:'隨機新題',pt,rows}}
 function newChart(c){S.io={k:'chart',c,step:-1,draft:{},done:[],checked:null,got:0,total:0};saveIo()}
 function saveIo(){store.set('io',S.io&&S.io.k==='chart'?S.io:null)}
-const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed']];
+const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed'],['date','Date（日/月/年）']];
+const ioDate=v=>(String(v||'').normalize('NFKC').match(/\d+/g)||[]).map(Number).join('/');
 const inOk=(x,n,a)=>[x.name,...(x.alt||[])].some(m=>ionorm(m+' '+x.amt)===ionorm(n+' '+a));
 function totals(c){let i=0,o=0,b=0,bo=0,ex=[],ox=[];c.rows.forEach(r=>{r.in.forEach(x=>{i+=x.ml||0;b+=x.bowl||0;if(x.extra)ex.push(x.extra)});r.out.forEach(x=>{o+=x.ml||0;if(x.c==='f')bo++;if(x.c==='v'&&!x.ml)ox.push(x.nat);if(x.extra)ox.push(x.extra)})});
  return{i,o,b,bo,inT:[...ex,`Diet x ${bowlTxt(b)} bowl`,i+'ml'].join(' + '),outT:[...ox,o+'ml','B.O. x'+bo].join(' + ')}}
 function expectRow(r){const g=c=>r.out.find(x=>x.c===c),v=g('v'),u=g('u'),f=g('f');return{v,u,f}}
 function checkStep(){const z=S.io,c=z.c,d=z.draft,R=[];const add=(k,label,ok,ans)=>R.push({k,label,ok,ans});
- if(z.step===-1){const p=c.pt,E={...p,wb:p.ward+'/'+p.bed};HF.forEach(h=>{const v=d[h[0]]||'';let ok=ionorm(v)===ionorm(E[h[0]]);if(h[0]==='sex')ok=/^(F|FEMALE)$/i.test(v.trim())?p.sex==='F':/^(M|MALE)$/i.test(v.trim())&&p.sex==='M';add(h[0],h[1],ok,E[h[0]])})}
+ if(z.step===-1){const p=c.pt,E={...p,wb:p.ward+'/'+p.bed};HF.forEach(h=>{const v=d[h[0]]||'';let ok=ionorm(v)===ionorm(E[h[0]]);if(h[0]==='sex')ok=/^(F|FEMALE)$/i.test(v.trim())?p.sex==='F':/^(M|MALE)$/i.test(v.trim())&&p.sex==='M';if(h[0]==='date'){ok=ioDate(v)===ioDate(E.date);add('date','Date',ok,ioDate(E.date));return}add(h[0],h[1],ok,E[h[0]])})}
  else if(z.step<c.rows.length){const r=c.rows[z.step],e=expectRow(r);const has=(...k)=>k.some(x=>(d[x]||'').trim());
   if(r.in.length||has('ti'))add('ti','入口時間',r.in.length?ioTime(d.ti)===ioTime(r.t):false,r.in.length?r.t:'（留空）');
   const left=r.in.slice(),bad=[];[0,1,2].forEach(i=>{const n=d['n'+i]||'',a=d['a'+i]||'';if(!(n+a).trim())return;const j=left.findIndex(x=>inOk(x,n,a));if(j>=0){const x=left.splice(j,1)[0];add('n'+i,x.zh,true,(x.name+'　'+x.amt).trim())}else bad.push(i)});
@@ -292,7 +293,7 @@ function vForm(){const z=S.io;
  if(z.step>n){const t=totals(c);app.innerHTML=`<h1>完成：${esc(c.title)}</h1><div class="card" style="text-align:center"><div class="score">${z.got} / ${z.total}</div><p class="mute">填啱嘅欄位</p></div><h2>完整答案（可左右掃）</h2>${ptCard(c.pt)}${chartTable(c,n)}<div class="card sm"><strong>Total Input</strong><br>${esc(t.inT)}<br><strong>Total Output</strong><br>${esc(t.outT)}</div><p class="mute sm">有量唔到嘅項目（例如尿片、大便），教材 p139 範例冇填 Balance，所以唔使計。</p><button class="btn" data-io="rand">再做一張隨機新題</button><button class="btn ghost" data-io="exit">返回填表練習</button>`;return}
  const fb=ck?`<div class="res ${ck.every(x=>x.ok)?'ok':'bad'}"><strong>${ck.every(x=>x.ok)?'✓ 全部填啱':`填啱 ${ck.filter(x=>x.ok).length} / ${ck.length}`}</strong>${ck.map(x=>`${x.ok?'✓':'✗'} ${esc(x.label)}：${esc(x.ans)}`).join('<br>')}</div><button class="btn" data-io="cnext">${z.step<n?'下一步':'睇完整表格'}</button>`:'<button class="btn" data-io="check">對答案</button>';
  let body;
- if(z.step===-1)body=`<h1>先填表頭</h1>${ptCard(c.pt)}<div class="fg">${HF.map(h=>fld(h[0],h[1])).join('')}</div>`;
+ if(z.step===-1)body=`<h1>先填表頭同日期</h1>${ptCard(c.pt)}<div class="fg">${HF.map(h=>fld(h[0],h[1])).join('')}</div><p class="mute sm">Date 寫喺表格左邊第一格（Date/Time 欄），下面先寫時間。</p>`;
  else if(z.step<n){const r=c.rows[z.step];body=`<div class="card"><strong>${zhTime(r.t)}</strong><br><span class="mute sm">入口</span> ${r.in.length?r.in.map(x=>esc(x.zh)).join('、'):'—'}<br><span class="mute sm">出口</span> ${r.out.length?r.out.map(x=>esc(x.zh)).join('、'):'—'}</div><p class="mute sm">冇資料嘅欄留空。</p>
   <h3>INTAKE 入口</h3>${fld('ti','Time')}<div class="fg">${[0,1,2].map(i=>fld('n'+i,'By Mouth')+fld('a'+i,'Amount')).join('')}</div>
   <h3>OUTPUT 出口</h3>${fld('to','Time')}<div class="fg">${fld('vn','Vomit：Nature')}${fld('va','Vomit：Amount')}</div>${fld('ur','Urine')}${fld('fa','Faeces')}`}
