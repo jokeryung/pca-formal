@@ -92,7 +92,7 @@ const app=document.getElementById('app');
 const IC={home:'<path d="M3 11l9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"/>',study:'<path d="M12 6C10 4.500 7 4 3 4v14c4 0 7 .5 9 2 2-1.500 5-2 9-2V4c-4 0-7 .5-9 2zM12 6v14"/>',cards:'<rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 7V5a2 2 0 012-2h10a2 2 0 012 2v9a2 2 0 01-2 2h-2"/>',quiz:'<path d="M4 20l1-4.500L16.500 4 20 7.500 8.500 19zM14 6.500L17.500 10"/>',form:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.500h6V4M9 10h6M9 13.500h6M9 17h4"/>',wrong:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 9l6 6M15 9l-6 6"/>',flags:'<path d="M5 22V3M5 4h13l-3 4.500 3 4.500H5"/>'};
 const ic=k=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
 function nav(){const w=Object.keys(S.wrong).length,f=Object.keys(S.flags).length;
- const tabs=[['home','首頁'],['study','溫習'],['cards','字卡'],['quiz','練習'],['form','填表'],['wrong','錯題',w],['flags','標記',f]];
+ const tabs=[['home','首頁'],['study','溫習'],['cards','字卡'],['quiz','練習'],['form','出入量'],['wrong','錯題',w],['flags','標記',f]];
  document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" ${S.tab===t[0]?'aria-current="page"':''}><b aria-hidden="true">${ic(t[0])}</b>${t[1]}${t[2]?`<span class="badge">${t[2]}</span>`:''}</button>`).join('')}
 function render(){nav();({home:vHome,form:vForm,study:vStudy,cards:vCards,quiz:vQuiz,wrong:vWrong,flags:vFlags})[S.tab]()}
 function toTop(){window.scrollTo(0,0)}
@@ -197,7 +197,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
 /* ===== 首頁 ===== */
 function vHome(){
  const w=Object.keys(S.wrong).filter(i=>byId[i]).length,f=Object.keys(S.flags).filter(i=>byId[i]).length;
- const T=[['form','填表練習','出入量記錄表 I&O Chart（p136–141）'],['study','溫習','各章重點、關鍵名詞、實務試重點'],['cards','字卡','撳一下反轉，背重點'],['quiz','MC 練習','簡單／正常兩個程度，每批 30 題'],['wrong','錯題本',w?`有 ${w} 題要重做`:'答錯嘅題目會記喺度'],['flags','標記',f?`有 ${f} 題有問題`:'覺得有問題嘅題目']];
+ const T=[['form','身體的液體出入量紀錄練習','I&O Chart 填表同縮寫（p136–141）'],['study','溫習','各章重點、關鍵名詞、實務試重點'],['cards','字卡','撳一下反轉，背重點'],['quiz','MC 練習','簡單／正常兩個程度，每批 30 題'],['wrong','錯題本',w?`有 ${w} 題要重做`:'答錯嘅題目會記喺度'],['flags','標記',f?`有 ${f} 題有問題`:'覺得有問題嘅題目']];
  app.innerHTML=`<h1>PCA 溫習（正式教材）</h1><p class="mute sm">《醫護支援人員護理技巧 II 基礎證書》　揀你想溫嘅部分：</p><div class="home">${T.map(t=>`<button data-tab="${t[0]}" class="${t[0]==='form'?'hot':''}"><b aria-hidden="true">${ic(t[0])}</b><span><strong>${t[1]}</strong><small>${t[2]}</small></span></button>`).join('')}</div>`}
 
 /* ===== 填表練習 ===== */
@@ -283,19 +283,19 @@ const cheat=open=>`<details class="card sm" ${open?'open':''}><summary><strong>�
 <p class="mute">教材註明：各醫院嘅縮寫可能有所修改。</p></details>`;
 function vForm(){const z=S.io;
  if(!z){const sv=store.get('io',null);
-  app.innerHTML=`<h1>填表練習</h1><p class="mute sm">出入量記錄表 Intake and Output Chart（教材 p136–141）。按教材要求用英文填寫。</p>
+  app.innerHTML=`<h1>身體的液體出入量紀錄練習</h1><p class="mute sm">出入量記錄表 Intake and Output Chart（教材 p136–141）。按教材要求用英文填寫。</p>
   <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
   <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
   <button class="link" data-io="p138"><span>教材原題</span><small>p138，答案 p139</small></button><button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
   <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
  if(z.k==='drill'){
-  if(z.i>=z.items.length){app.innerHTML=`<h1>縮寫練習完成</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.items.length}</div></div>${z.items.filter(x=>!x.ok).map(x=>`<div class="card sm">${esc(x.zh)}<br><strong>${esc(x.ans)}</strong> <span class="mute">${x.p}</span></div>`).join('')}<button class="btn" data-io="drill" data-m="${z.m}">再做 10 題（${z.m}）</button><button class="btn ghost" data-io="exit">返回填表練習</button>`;return}
+  if(z.i>=z.items.length){app.innerHTML=`<h1>縮寫練習完成</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.items.length}</div></div>${z.items.filter(x=>!x.ok).map(x=>`<div class="card sm">${esc(x.zh)}<br><strong>${esc(x.ans)}</strong> <span class="mute">${x.p}</span></div>`).join('')}<button class="btn" data-io="drill" data-m="${z.m}">再做 10 題（${z.m}）</button><button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`;return}
   const it=z.items[z.i],a=z.ans!==null,ok=a&&ioOk(it,z.ans);
   app.innerHTML=`<div class="row"><span class="mute sm">第 ${z.i+1} / ${z.items.length} 題｜${z.m}</span><button class="flag" data-io="exit">結束</button></div><div class="bar"><i style="width:${z.i*10}%"></i></div><p class="mute sm" style="margin-bottom:2px">${it.cat}</p><p style="font-weight:600;font-size:1.15rem;margin-top:2px">${esc(it.zh)}</p>
   ${z.m==='簡單'?it.opts.map((o,i)=>`<button class="opt ${a?(ioOk(it,o)?'ok':o===z.ans?'bad':''):''}" data-io="pick" data-v="${esc(o)}" ${a?'disabled':''}><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`).join(''):`<form data-ioform="type"><label class="ff"><span>記錄表上應寫</span><input id="dv" value="${a?esc(z.ans):''}" ${a?'disabled':''} class="${a?(ok?'ok':'bad'):''}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label>${a?'':'<button class="btn">對答案</button>'}</form><p class="mute sm">大細楷、空格、點同括號唔計分。</p>`}
   ${a?`<div class="res ${ok?'ok':'bad'}"><strong>${ok?'✓ 答啱':'✗ 答錯'}</strong>答案：${esc(it.ans)}<br>${esc(it.why)}<div class="mute sm">出處：印刷 ${it.p}</div></div><button class="btn" data-io="dnext">${z.i+1<z.items.length?'下一題':'睇結果'}</button>`:''}${z.m==='正常'&&!a?cheat(false):''}`;return}
  const c=z.c,n=c.rows.length,ck=z.checked;
- if(z.step>n){const t=totals(c);app.innerHTML=`<h1>完成：${esc(c.title)}</h1><div class="card" style="text-align:center"><div class="score">${z.got} / ${z.total}</div><p class="mute">填啱嘅欄位</p></div><h2>完整答案（可左右掃）</h2>${ptCard(c.pt)}${chartTable(c,n)}<div class="card sm"><strong>Total Input</strong><br>${esc(t.inT)}<br><strong>Total Output</strong><br>${esc(t.outT)}</div><p class="mute sm">有量唔到嘅項目（例如尿片、大便），教材 p139 範例冇填 Balance，所以唔使計。</p><button class="btn" data-io="rand">再做一張隨機新題</button><button class="btn ghost" data-io="exit">返回填表練習</button>`;return}
+ if(z.step>n){const t=totals(c);app.innerHTML=`<h1>完成：${esc(c.title)}</h1><div class="card" style="text-align:center"><div class="score">${z.got} / ${z.total}</div><p class="mute">填啱嘅欄位</p></div><h2>完整答案（可左右掃）</h2>${ptCard(c.pt)}${chartTable(c,n)}<div class="card sm"><strong>Total Input</strong><br>${esc(t.inT)}<br><strong>Total Output</strong><br>${esc(t.outT)}</div><p class="mute sm">有量唔到嘅項目（例如尿片、大便），教材 p139 範例冇填 Balance，所以唔使計。</p><button class="btn" data-io="rand">再做一張隨機新題</button><button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`;return}
  const fb=ck?`<div class="res ${ck.every(x=>x.ok)?'ok':'bad'}"><strong>${ck.every(x=>x.ok)?'✓ 全部填啱':`填啱 ${ck.filter(x=>x.ok).length} / ${ck.length}`}</strong>${ck.map(x=>`${x.ok?'✓':'✗'} ${esc(x.label)}：${esc(x.ans)}`).join('<br>')}</div><button class="btn" data-io="cnext">${z.step<n?'下一步':'睇完整表格'}</button>`:'<button class="btn" data-io="check">對答案</button>';
  let body;
  if(z.step===-1)body=`<h1>先填表頭同日期</h1>${ptCard(c.pt)}<div class="fg">${HF.map(h=>fld(h[0],h[1])).join('')}</div><p class="mute sm">Date 寫喺表格左邊第一格（Date/Time 欄），下面先寫時間。</p>`;
