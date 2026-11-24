@@ -61,6 +61,12 @@ select{font:inherit;width:100%;min-height:46px;padding:8px;border-radius:8px;bor
 .lv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px}.lv button{min-height:56px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);text-align:left;padding:8px 12px}.lv button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent);font-weight:700}.lv small{display:block;font-weight:400;color:var(--mute);font-size:.8rem}
 .exam{border-left:4px solid var(--warn)}
 .pill{display:inline-block;font-size:.75rem;border-radius:6px;padding:1px 7px;background:var(--soft);color:var(--accent);margin-left:6px;vertical-align:middle}
+nav button{min-width:0;padding:0 2px}
+.home{display:grid;gap:10px}.home button{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.home b{font-size:1.8rem;font-weight:400;line-height:1}.home strong{display:block;font-size:1.08rem}.home small{display:block;color:var(--mute);font-size:.86rem}
+.ff{display:block;margin:8px 0;min-width:0}.ff span{display:block;font-size:.82rem;color:var(--mute)}.ff input{width:100%;font:inherit;min-height:46px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);opacity:1}.ff input:focus{outline:3px solid var(--accent)}.ff input.ok{border-color:var(--ok);background:var(--ok-bg)}.ff input.bad{border-color:var(--bad);background:var(--bad-bg)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:10px 0}.tw table{border-collapse:collapse;font-size:.78rem;line-height:1.35}.tw th,.tw td{border:1px solid var(--line);padding:5px 7px;white-space:nowrap;text-align:left;height:28px}.tw th{white-space:normal;font-weight:600}
+summary{cursor:pointer;min-height:32px}
 .score{font-size:2.2rem;font-weight:700;color:var(--accent);line-height:1.2}
 </style>
 </head>
@@ -75,15 +81,15 @@ const secOf=q=>q.chapter.split('｜')[1];
 const inLv=q=>q.level===S.level;
 const store={mem:{},get(k,d){try{const v=localStorage.getItem('pca2_'+k);return v?JSON.parse(v):d}catch(e){return this.mem[k]??d}},set(k,v){this.mem[k]=v;try{localStorage.setItem('pca2_'+k,JSON.stringify(v))}catch(e){}}};
 const byId=Object.fromEntries(Q.map(q=>[q.id,q]));
-const S={tab:'study',sec:null,wrong:store.get('wrong',{}),flags:store.get('flags',{}),seen:store.get('seen',[]),picked:store.get('picked',C.map(c=>c.title)),level:store.get('level','簡單'),quiz:null,fcSec:'全部',fc:null,flagOpen:false};
+const S={tab:'home',io:null,sec:null,wrong:store.get('wrong',{}),flags:store.get('flags',{}),seen:store.get('seen',[]),picked:store.get('picked',C.map(c=>c.title)),level:store.get('level','簡單'),quiz:null,fcSec:'全部',fc:null,flagOpen:false};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const app=document.getElementById('app');
 
 function nav(){const w=Object.keys(S.wrong).length,f=Object.keys(S.flags).length;
- const tabs=[['study','📖','溫習'],['cards','🗂','字卡'],['quiz','✏️','練習'],['wrong','📕','錯題',w],['flags','🚩','標記',f]];
+ const tabs=[['home','🏠','首頁'],['study','📖','溫習'],['cards','🗂','字卡'],['quiz','✏️','練習'],['form','📋','填表'],['wrong','📕','錯題',w],['flags','🚩','標記',f]];
  document.getElementById('nav').innerHTML=tabs.map(t=>`<button data-tab="${t[0]}" ${S.tab===t[0]?'aria-current="page"':''}><b aria-hidden="true">${t[1]}</b>${t[2]}${t[3]?`<span class="badge">${t[3]}</span>`:''}</button>`).join('')}
-function render(){nav();({study:vStudy,cards:vCards,quiz:vQuiz,wrong:vWrong,flags:vFlags})[S.tab]()}
+function render(){nav();({home:vHome,form:vForm,study:vStudy,cards:vCards,quiz:vQuiz,wrong:vWrong,flags:vFlags})[S.tab]()}
 function toTop(){window.scrollTo(0,0)}
 
 /* 溫習 */
@@ -182,6 +188,130 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
  case'copy':{const t=flagText(),m=document.getElementById('msg');try{await navigator.clipboard.writeText(t);m.textContent='已複製。'}catch(err){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();let k=false;try{k=document.execCommand('copy')}catch(x){}a.remove();m.textContent=k?'已複製。':'複製唔到，請用「下載文字檔」。'}break}
  case'dl':{const u=URL.createObjectURL(new Blob([flagText()],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='PCA正式教材_有問題題目.txt';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);break}
  }});
+
+/* ===== 首頁 ===== */
+function vHome(){
+ const w=Object.keys(S.wrong).filter(i=>byId[i]).length,f=Object.keys(S.flags).filter(i=>byId[i]).length;
+ const T=[['study','📖','溫習','各章重點、關鍵名詞、實務試重點'],['cards','🗂','字卡','撳一下反轉，背重點'],['quiz','✏️','MC 練習','簡單／正常兩個程度，每批 30 題'],['form','📋','填表練習','出入量記錄表 I&O Chart（p136–141）'],['wrong','📕','錯題本',w?`有 ${w} 題要重做`:'答錯嘅題目會記喺度'],['flags','🚩','標記',f?`有 ${f} 題有問題`:'覺得有問題嘅題目']];
+ app.innerHTML=`<h1>PCA 溫習（正式教材）</h1><p class="mute sm">《醫護支援人員護理技巧 II 基礎證書》　揀你想溫嘅部分：</p><div class="home">${T.map(t=>`<button data-tab="${t[0]}"><b aria-hidden="true">${t[1]}</b><span><strong>${t[2]}</strong><small>${t[3]}</small></span></button>`).join('')}</div>`}
+
+/* ===== 填表練習 ===== */
+const rnd=a=>a[Math.random()*a.length|0];
+const ionorm=s=>String(s||'').normalize('NFKC').toUpperCase().replace(/1[⁄\/]2/g,'½').replace(/3[⁄\/]4/g,'¾').replace(/0?\.5(?=\s*BOWL)/g,'½').replace(/[×✕✖*]/g,'X').replace(/COLOR/g,'COLOUR').replace(/BOWLS/g,'BOWL').replace(/[^A-Z0-9½¾]/g,'').replace(/X/g,'');
+const ioTime=s=>{let d=String(s||'').normalize('NFKC').replace(/\D/g,'');return d.length===3?'0'+d:d};
+const bowlNum=s=>{s=String(s||'').normalize('NFKC').replace(/1⁄2|1\/2/g,' .5').replace(/3⁄4|3\/4/g,' .75').replace(/1⁄4|1\/4/g,' .25').replace(/[^0-9. ]/g,' ').trim();if(!s)return null;return s.split(/\s+/).reduce((a,x)=>a+Number(x),0)};
+const bowlTxt=n=>{const w=Math.floor(n),f={0:'',0.25:'¼',0.5:'½',0.75:'¾'}[n-w];return (w||!f?w:'')+f};
+const zhTime=t=>{let[h,m]=t.split(':').map(Number);const p=h<12?'上午':h===12?'中午':'下午';const H='零一二三四五六七八九十'.split('').concat(['十一','十二'])[h>12?h-12:h];return p+H+'時'+(m?'三十分':'正')};
+const COL=[['黃色','Y'],['啡色','B'],['綠色','G']],QUA=[['硬','H'],['軟','S'],['爛','L'],['水狀','W']],QTY=[['大量','L'],['中量','M'],['小量','S']],SUF=[['',''],['',''],['含黏液',' with Mucus'],['含血',' with Blood']];
+const LIQ=[['清水','H2O',['Water']],['奶','Milk'],['湯','Soup'],['果汁','Juice'],['粥水','RH2O'],['麥皮','Oatmeal']],DIET=[['糊餐','Puree'],['胃餐','Gastric Diet'],['粥','Congee'],['飯','Rice'],['麵','Noodles'],['免治餐','Minced Diet']],BOWL=[['一碗',1],['大半碗',.75],['半碗',.5]];
+const VOM=[['黃色水狀胃液','Y.F.'],['綠色水狀胃液','G.F.'],['啡色（咖啡渣樣）胃液','C.G.F.'],['未消化食物','U.D. Food']];
+function mkStool(){const q=rnd(QTY),u=rnd(QUA);if(Math.random()<.2)return{zh:`${q[0]}${u[0]}柏油便一次`,ans:`Tarry ${u[1]}.S.(${q[1]}) x1`,p:'p137、p140',why:`Tarry＝柏油便；${u[1]}＝${u[0]}；S＝Stool；(${q[1]})＝${q[0]}`};const c=rnd(COL),s=rnd(SUF);return{zh:`${q[0]}${c[0]}${u[0]}大便一次${s[0]}`,ans:`${c[1]}.${u[1]}.S.(${q[1]}) x1${s[1]}`,p:'p137、p140',why:`${c[1]}＝${c[0]}；${u[1]}＝${u[0]}；S＝Stool；(${q[1]})＝${q[0]}`}}
+const ml=(a,b)=>a+50*(Math.random()*((b-a)/50+1)|0);
+function mkUrine(){const k=Math.random();if(k<.55){const n=ml(100,350),t=Math.random()<.35;return{zh:`排出${t?'茶色':''}小便 ${n} 毫升`,ans:`${n}ml${t?' (tea colour)':''}`,ml:n,p:'p138–140',why:'量到嘅小便寫毫升；有異常顏色要註明'}}const q=rnd(QTY);if(k<.8)return{zh:`換尿片一次（${q[0]}）`,ans:`W.N.(${q[1]}) x1`,alt:[`Wet Napkin (${q[1]}) x1`],p:'p137、p140',why:'W.N.＝Wet Napkin 濕尿片'};return{zh:`病人如廁小便一次，${q[0]}`,ans:`PU (${q[1]}) x1`,alt:[`Pass Urine (${q[1]}) x1`],p:'p137',why:'PU＝Pass Urine'}}
+function mkVomit(){const v=rnd(VOM);if(v[1]!=='U.D. Food'&&Math.random()<.45){const n=ml(50,250);return{zh:`嘔吐${v[0]}一次 ${n} 毫升`,ans:`${v[1]} ${n}ml`,nat:v[1],amt:n+'ml',ml:n,p:'p141',why:'量到就寫縮寫加毫升'}}const q=rnd(QTY);return{zh:`嘔吐${q[0]}${v[0]}一次`,ans:`${v[1]}(${q[1]}) x1`,nat:`${v[1]}(${q[1]}) x1`,amt:'',p:'p141',why:'量唔到就估計 L／M／S 同次數'}}
+function mkLiq(){const l=rnd(LIQ),n=ml(50,250);return{zh:`${l[0]} ${n} 毫升`,ans:`${l[1]} ${n}ml`,alt:(l[2]||[]).map(x=>`${x} ${n}ml`),name:l[1],amt:n+'ml',ml:n,p:'p140',why:`${l[0]}＝${l[1]}`}}
+function mkDiet(){const d=rnd(DIET),b=rnd(BOWL);return{zh:`${d[0]}${b[0]}`,ans:`${d[1]} x ${bowlTxt(b[1])} bowl`,name:d[1],amt:`${bowlTxt(b[1])} bowl`,bowl:b[1],p:'p140',why:`${d[0]}＝${d[1]}；碗數寫 bowl`}}
+function mkFixed(){const n=ml(150,400);return rnd([{zh:'沒有大便',ans:'BNO',alt:['Bowel Not Open'],p:'p137、p140',why:'BNO＝Bowel Not Open'},{zh:'沒有排小便',ans:'N.P.U.',p:'p140',why:'N.P.U. 係教材列嘅寫法'},{zh:'不准飲食',ans:'N.P.O.',alt:['Nil By Mouth','Nil Per Oral'],p:'p140',why:'N.P.O.＝Nil Per Oral'},{zh:'拒絕進食',ans:'Refused Diet',p:'p140',why:'教材寫 Refused Diet'},{zh:`清倒尿袋 ${n} 毫升`,ans:`${n}ml (B.E.)`,alt:[`Bag Empty ${n}ml`,`Bag Empty ${n}ml (B.E.)`,`B.E. ${n}ml`],p:'p141',why:'B.E.＝Bag Empty，已清倒'},{zh:`尿袋有 ${n} 毫升小便，未清倒`,ans:`${n}ml (B.N.E.)`,alt:[`B.N.E. ${n}ml`],p:'p141',why:'B.N.E.＝Bag Not Empty，下次要減回前量'},{zh:'每 4 小時量一次小便',ans:'Q4H U/O',p:'p141',why:'U/O＝Urine output'}])}
+function mkTime(){const t=String(1+(Math.random()*23|0)).padStart(2,'0')+':'+rnd(['00','30']);return{zh:`${zhTime(t)}（用 24 小時制寫）`,ans:t,time:1,p:'p133、p139',why:'記錄用 24 小時制'}}
+const MK={大便:mkStool,小便:mkUrine,嘔吐:mkVomit,流質:mkLiq,餐類:mkDiet,縮寫:mkFixed,時間:mkTime};
+const ioOk=(it,v)=>it.time?ioTime(v)===ioTime(it.ans):[it.ans,...(it.alt||[])].some(a=>ionorm(a)===ionorm(v));
+function newDrill(){const cats=shuffle(['大便','大便','大便','小便','小便','嘔吐','嘔吐','流質','餐類','縮寫','時間']).slice(0,10),seen=new Set(),items=[];
+ for(const c of cats){let it,g=0;do{it=MK[c]()}while(seen.has(it.zh)&&g++<30);seen.add(it.zh);it.cat=c;const o=new Map([[ionorm(it.ans),it.ans]]);g=0;while(o.size<4&&g++<200){const x=MK[c]();if(!ioOk(it,x.ans)&&!o.has(ionorm(x.ans)))o.set(ionorm(x.ans),x.ans)}it.opts=shuffle([...o.values()]);items.push(it)}
+ S.io={k:'drill',items,i:0,score:0,ans:null,val:''}}
+
+/* 整張表 */
+const L_=(zh,name,n,alt)=>({zh:`${zh} ${n} 毫升`,name,amt:n+'ml',ml:n,alt:alt||[]});
+const P138={title:'教材原題（p138，答案 p139）',pt:{zh:'Chan Siu Lan 陳少蘭',name:'Chan Siu Lan',sex:'F',id:'C245543(2)',age:'60',hn:'321620',ward:'D4',bed:'4',dept:'Surgical',team:'2',date:'15-2-2012'},rows:[
+{t:'05:30',in:[L_('奶','Milk',50),L_('清水','H2O',50,['Water'])],out:[{c:'f',zh:'中量黃色硬大便一次',ans:'Y.H.S.(M) x1'}]},
+{t:'06:30',in:[],out:[{c:'u',zh:'排出淡黃色小便 100 毫升',ans:'100ml',alt:['100ml (light yellow)','100ml (pale yellow)'],ml:100}]},
+{t:'07:00',in:[L_('麥皮','Oatmeal',150),L_('清水','H2O',50,['Water'])],out:[]},
+{t:'08:00',in:[],out:[{c:'v',zh:'嘔吐大量未消化食物一次',nat:'U.D. Food(L) x1',amt:''}]},
+{t:'10:30',in:[L_('湯','Soup',200)],out:[{c:'f',zh:'大量啡色爛大便一次含黏液',ans:'B.L.S.(L) x1 with Mucus'}]},
+{t:'13:00',in:[{zh:'糊餐一碗',name:'Puree',amt:'1 bowl',bowl:1},L_('清水','H2O',100,['Water'])],out:[{c:'u',zh:'排出茶色小便 150 毫升',ans:'150ml (tea colour)',ml:150}]},
+{t:'13:30',in:[],out:[{c:'u',zh:'排出茶色小便 200 毫升',ans:'200ml (tea colour)',ml:200}]},
+{t:'16:00',in:[L_('清水','H2O',50,['Water'])],out:[{c:'f',zh:'小量軟柏油大便一次',ans:'Tarry S.S.(S) x1'}]},
+{t:'17:30',in:[{zh:'胃餐半碗',name:'Gastric Diet',amt:'½ bowl',bowl:.5},{zh:'橙一個',name:'Orange',amt:'x 1',extra:'Orange x 1'},L_('清水','H2O',100,['Water'])],out:[]},
+{t:'18:30',in:[],out:[{c:'v',zh:'嘔吐黃綠色胃液一次 200 毫升',nat:'Y.G.F.',amt:'200ml',ml:200}]},
+{t:'19:00',in:[{zh:'不准飲食',name:'N.P.O.',amt:'',alt:['Nil By Mouth','Nil Per Oral']}],out:[{c:'u',zh:'失禁病人換尿片一次（中量茶色小便）',ans:'W.N.(M) x1 (tea colour)',alt:['Wet Napkin (M) x1 (tea colour)'],extra:'W.N.(M) x1'}]},
+{t:'20:00',in:[],out:[{c:'v',zh:'嘔吐啡色胃液一次 100 毫升',nat:'C.G.F.',amt:'100ml',ml:100},{c:'f',zh:'大量軟柏油大便一次',ans:'Tarry S.S.(L) x1'}]}]};
+function randCase(){
+ const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
+ const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
+ const slots=[];for(let h=6;h<=20;h++)for(const m of['00','30'])slots.push(String(h).padStart(2,'0')+':'+m);
+ const ts=shuffle(slots).slice(0,8).sort(),rows=ts.map(t=>({t,in:[],out:[]}));
+ const fix=o=>{if(!o.c)return o;if(o.c==='u'&&!o.ml)o.extra=o.ans;return o};
+ const until=(mk,ok)=>{let x;do{x=mk()}while(!ok(x));return x};
+ const outs=[{...mkStool(),c:'f'},{...mkStool(),c:'f'},{...until(mkUrine,x=>x.ml),c:'u'},{...until(mkUrine,x=>x.ml),c:'u'},{...until(mkUrine,x=>!x.ml),c:'u'},{...mkVomit(),c:'v'}].map(fix);
+ const idx=shuffle([0,1,2,3,4,5,6,7]),liq=()=>mkLiq();outs.forEach((o,i)=>rows[idx[i]].out.push(o));
+ const di=mkDiet(),di2=mkDiet();const sets=[[liq()],[di,liq()],[liq()],[di2,liq()],[liq()]];const order=[idx[6],idx[7],idx[0],idx[2],idx[4]];sets.forEach((s,i)=>rows[order[i]].in=s);
+ return{title:'隨機新題',pt,rows}}
+function newChart(c){S.io={k:'chart',c,step:-1,draft:{},done:[],checked:null,got:0,total:0};saveIo()}
+function saveIo(){store.set('io',S.io&&S.io.k==='chart'?S.io:null)}
+const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed']];
+const inOk=(x,n,a)=>[x.name,...(x.alt||[])].some(m=>ionorm(m+' '+x.amt)===ionorm(n+' '+a));
+function totals(c){let i=0,o=0,b=0,bo=0,ex=[],ox=[];c.rows.forEach(r=>{r.in.forEach(x=>{i+=x.ml||0;b+=x.bowl||0;if(x.extra)ex.push(x.extra)});r.out.forEach(x=>{o+=x.ml||0;if(x.c==='f')bo++;if(x.c==='v'&&!x.ml)ox.push(x.nat);if(x.extra)ox.push(x.extra)})});
+ return{i,o,b,bo,inT:[...ex,`Diet x ${bowlTxt(b)} bowl`,i+'ml'].join(' + '),outT:[...ox,o+'ml','B.O. x'+bo].join(' + ')}}
+function expectRow(r){const g=c=>r.out.find(x=>x.c===c),v=g('v'),u=g('u'),f=g('f');return{v,u,f}}
+function checkStep(){const z=S.io,c=z.c,d=z.draft,R=[];const add=(k,label,ok,ans)=>R.push({k,label,ok,ans});
+ if(z.step===-1){const p=c.pt,E={...p,wb:p.ward+'/'+p.bed};HF.forEach(h=>{const v=d[h[0]]||'';let ok=ionorm(v)===ionorm(E[h[0]]);if(h[0]==='sex')ok=/^(F|FEMALE)$/i.test(v.trim())?p.sex==='F':/^(M|MALE)$/i.test(v.trim())&&p.sex==='M';add(h[0],h[1],ok,E[h[0]])})}
+ else if(z.step<c.rows.length){const r=c.rows[z.step],e=expectRow(r);const has=(...k)=>k.some(x=>(d[x]||'').trim());
+  if(r.in.length||has('ti'))add('ti','入口時間',r.in.length?ioTime(d.ti)===ioTime(r.t):false,r.in.length?r.t:'（留空）');
+  const left=r.in.slice(),bad=[];[0,1,2].forEach(i=>{const n=d['n'+i]||'',a=d['a'+i]||'';if(!(n+a).trim())return;const j=left.findIndex(x=>inOk(x,n,a));if(j>=0){const x=left.splice(j,1)[0];add('n'+i,x.zh,true,(x.name+'　'+x.amt).trim())}else bad.push(i)});
+  left.forEach(x=>{const i=bad.shift();add(i===undefined?'':'n'+i,x.zh,false,(x.name+'　'+x.amt).trim())});bad.forEach(i=>add('n'+i,'多填咗入口項目',false,'（留空）'));
+  if(r.out.length||has('to'))add('to','出口時間',r.out.length?ioTime(d.to)===ioTime(r.t):false,r.out.length?r.t:'（留空）');
+  if(e.v||has('vn','va'))add('vn','Vomit',e.v?ionorm((d.vn||'')+' '+(d.va||''))===ionorm(e.v.nat+' '+e.v.amt):false,e.v?(e.v.nat+'　'+e.v.amt).trim():'（留空）');
+  if(e.u||has('ur'))add('ur','Urine',e.u?ioOk(e.u,d.ur||''):false,e.u?e.u.ans:'（留空）');
+  if(e.f||has('fa'))add('fa','Faeces',e.f?ioOk(e.f,d.fa||''):false,e.f?e.f.ans:'（留空）')}
+ else{const t=totals(c),n=s=>{const m=String(s||'').normalize('NFKC').replace(/ml|cc/gi,'').trim();return m===''?NaN:Number(m)};
+  add('tin','入口總量（ml）',n(d.tin)===t.i,t.i+'ml');add('tb','餐類總碗數',bowlNum(d.tb)===t.b,bowlTxt(t.b)+' bowl');add('tout','出口總量（ml）',n(d.tout)===t.o,t.o+'ml');add('tbo','大便總次數（B.O.）',n(String(d.tbo||'').replace(/[^0-9]/g,''))===t.bo,'B.O. x'+t.bo)}
+ z.checked=R;z.got+=R.filter(x=>x.ok).length;z.total+=R.length;saveIo()}
+const fld=(k,l,ph)=>{const z=S.io,c=z.checked&&z.checked.find(x=>x.k===k);return `<label class="ff"><span>${esc(l)}</span><input data-f="${k}" value="${esc(z.draft[k]||'').replace(/"/g,'&quot;')}" placeholder="${ph||''}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" ${z.checked?'disabled':''} class="${c?(c.ok?'ok':'bad'):''}"></label>`};
+function ptCard(p){return `<div class="card sm"><strong>病人資料</strong><br>姓名：${esc(p.zh)}　性別：${p.sex==='F'?'女':'男'}　年齡：${p.age}<br>身份証編號：${esc(p.id)}　醫院號碼：${p.hn}<br>病房：${p.ward}　床號：${p.bed}　部門：${p.dept}　Team ${p.team}<br>日期：${p.date}</div>`}
+function chartTable(c,upto){let h='';c.rows.slice(0,upto).forEach(r=>{const e=expectRow(r),n=Math.max(1,r.in.length);for(let i=0;i<n;i++){const x=r.in[i];h+=`<tr><td>${i===0&&r.in.length?r.t:''}</td><td></td><td></td><td></td><td></td><td></td><td>${x?esc(x.name):''}</td><td>${x?esc(x.amt):''}</td>${i===0&&r.out.length?`<td>${r.t}</td><td>${e.v?esc(e.v.nat):''}</td><td>${e.v?esc(e.v.amt):''}</td><td>${e.u?esc(e.u.ans):''}</td><td>${e.f?esc(e.f.ans):''}</td><td></td>`:'<td></td><td></td><td></td><td></td><td></td><td></td>'}</tr>`}});
+ return `<div class="tw" tabindex="0" aria-label="出入量記錄表，可左右掃"><table><thead><tr><th rowspan="2">Date/ Time</th><th colspan="7">INTAKE</th><th colspan="6">OUTPUT</th></tr><tr><th>IV Fluids</th><th>Amount</th><th>Additive/ Dosage</th><th>Given by</th><th>Checked by</th><th>By Mouth/ <s>Tube Feed</s></th><th>Amount</th><th>Time</th><th>Vomit/ <s>Aspiration</s> Nature</th><th>Amount</th><th>Urine</th><th>Faeces</th><th>Drainage</th></tr></thead><tbody><tr><td>${c.pt.date.replace(/-/g,'/')}</td>${'<td></td>'.repeat(13)}</tr>${h}</tbody></table></div>`}
+const cheat=open=>`<details class="card sm" ${open?'open':''}><summary><strong>縮寫表（p137、p140–141）</strong></summary>
+<p><strong>大便</strong>＝顏色＋質＋S（Stool）＋（量）x 次數<br>顏色：Y 黃、B 啡、G 綠；Tarry 柏油便<br>質：H 硬、S 軟、L 爛、W 水狀<br>量：L 大量、M 中量、S 小量<br>含黏液 with Mucus；含血 with Blood；冇大便 BNO<br>例：中量啡色軟大便一次＝B.S.S.(M) x1</p>
+<p><strong>小便</strong>：__ml；茶色 (tea colour)<br>W.N. 換尿片；PU 如廁；N.P.U. 冇排小便<br>B.E. 已清倒尿袋；B.N.E. 未清倒，下次要減回前量</p>
+<p><strong>嘔吐</strong>：Y.F. 黃色、G.F. 綠色、C.G.F. 咖啡渣樣、U.D. Food 未消化食物<br>黃綠色胃液：p139 範例寫 Y.G.F.<br>量唔到：縮寫＋（量）x 次數；量到：縮寫＋ml</p>
+<p><strong>入口</strong>：H2O 清水、RH2O 粥水、Soup 湯、Juice 果汁、Milk 奶、Oatmeal 麥皮、Congee 粥、Rice 飯、Noodles 麵、Puree 糊餐、Gastric Diet 胃餐、Minced Diet 免治餐、Full Diet 正餐<br>1 bowl 一碗、3/4 bowl 大半碗、1/2 bowl 半碗<br>N.P.O. 不准飲食；Refused Diet 拒絕進食</p>
+<p class="mute">教材註明：各醫院嘅縮寫可能有所修改。</p></details>`;
+function vForm(){const z=S.io;
+ if(!z){const sv=store.get('io',null);
+  app.innerHTML=`<h1>填表練習</h1><p class="mute sm">出入量記錄表 Intake and Output Chart（教材 p136–141）。按教材要求用英文填寫。</p>
+  <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
+  <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
+  <button class="link" data-io="p138"><span>教材原題</span><small>p138，答案 p139</small></button><button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
+  <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
+ if(z.k==='drill'){
+  if(z.i>=z.items.length){app.innerHTML=`<h1>縮寫練習完成</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.items.length}</div></div>${z.items.filter(x=>!x.ok).map(x=>`<div class="card sm">${esc(x.zh)}<br><strong>${esc(x.ans)}</strong> <span class="mute">${x.p}</span></div>`).join('')}<button class="btn" data-io="drill" data-m="${z.m}">再做 10 題（${z.m}）</button><button class="btn ghost" data-io="exit">返回填表練習</button>`;return}
+  const it=z.items[z.i],a=z.ans!==null,ok=a&&ioOk(it,z.ans);
+  app.innerHTML=`<div class="row"><span class="mute sm">第 ${z.i+1} / ${z.items.length} 題｜${z.m}</span><button class="flag" data-io="exit">結束</button></div><div class="bar"><i style="width:${z.i*10}%"></i></div><p class="mute sm" style="margin-bottom:2px">${it.cat}</p><p style="font-weight:600;font-size:1.15rem;margin-top:2px">${esc(it.zh)}</p>
+  ${z.m==='簡單'?it.opts.map((o,i)=>`<button class="opt ${a?(ioOk(it,o)?'ok':o===z.ans?'bad':''):''}" data-io="pick" data-v="${esc(o)}" ${a?'disabled':''}><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`).join(''):`<form data-ioform="type"><label class="ff"><span>記錄表上應寫</span><input id="dv" value="${a?esc(z.ans):''}" ${a?'disabled':''} class="${a?(ok?'ok':'bad'):''}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></label>${a?'':'<button class="btn">對答案</button>'}</form><p class="mute sm">大細楷、空格、點同括號唔計分。</p>`}
+  ${a?`<div class="res ${ok?'ok':'bad'}"><strong>${ok?'✓ 答啱':'✗ 答錯'}</strong>答案：${esc(it.ans)}<br>${esc(it.why)}<div class="mute sm">出處：印刷 ${it.p}</div></div><button class="btn" data-io="dnext">${z.i+1<z.items.length?'下一題':'睇結果'}</button>`:''}${z.m==='正常'&&!a?cheat(false):''}`;return}
+ const c=z.c,n=c.rows.length,ck=z.checked;
+ if(z.step>n){const t=totals(c);app.innerHTML=`<h1>完成：${esc(c.title)}</h1><div class="card" style="text-align:center"><div class="score">${z.got} / ${z.total}</div><p class="mute">填啱嘅欄位</p></div><h2>完整答案（可左右掃）</h2>${ptCard(c.pt)}${chartTable(c,n)}<div class="card sm"><strong>Total Input</strong><br>${esc(t.inT)}<br><strong>Total Output</strong><br>${esc(t.outT)}</div><p class="mute sm">有量唔到嘅項目（例如尿片、大便），教材 p139 範例冇填 Balance，所以唔使計。</p><button class="btn" data-io="rand">再做一張隨機新題</button><button class="btn ghost" data-io="exit">返回填表練習</button>`;return}
+ const fb=ck?`<div class="res ${ck.every(x=>x.ok)?'ok':'bad'}"><strong>${ck.every(x=>x.ok)?'✓ 全部填啱':`填啱 ${ck.filter(x=>x.ok).length} / ${ck.length}`}</strong>${ck.map(x=>`${x.ok?'✓':'✗'} ${esc(x.label)}：${esc(x.ans)}`).join('<br>')}</div><button class="btn" data-io="cnext">${z.step<n?'下一步':'睇完整表格'}</button>`:'<button class="btn" data-io="check">對答案</button>';
+ let body;
+ if(z.step===-1)body=`<h1>先填表頭</h1>${ptCard(c.pt)}<div class="fg">${HF.map(h=>fld(h[0],h[1])).join('')}</div>`;
+ else if(z.step<n){const r=c.rows[z.step];body=`<div class="card"><strong>${zhTime(r.t)}</strong><br><span class="mute sm">入口</span> ${r.in.length?r.in.map(x=>esc(x.zh)).join('、'):'—'}<br><span class="mute sm">出口</span> ${r.out.length?r.out.map(x=>esc(x.zh)).join('、'):'—'}</div><p class="mute sm">冇資料嘅欄留空。</p>
+  <h3>INTAKE 入口</h3>${fld('ti','Time')}<div class="fg">${[0,1,2].map(i=>fld('n'+i,'By Mouth')+fld('a'+i,'Amount')).join('')}</div>
+  <h3>OUTPUT 出口</h3>${fld('to','Time')}<div class="fg">${fld('vn','Vomit：Nature')}${fld('va','Vomit：Amount')}</div>${fld('ur','Urine')}${fld('fa','Faeces')}`}
+ else body=`<h1>計全日總出入量</h1>${chartTable(c,n)}<p class="mute sm">表格可以左右掃。</p><div class="fg">${fld('tin','入口總量（ml）')}${fld('tb','餐類總碗數')}${fld('tout','出口總量（ml）')}${fld('tbo','大便總次數 B.O.')}</div>`;
+ app.innerHTML=`<div class="row"><span class="mute sm">${esc(c.title)}｜${z.step+2} / ${n+2} 步</span><button class="flag" data-io="exit">離開（會儲存）</button></div><div class="bar"><i style="width:${(z.step+1)/(n+2)*100}%"></i></div>${body}${fb}${ck?'':cheat(false)}`}
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.f;if(k&&S.io&&S.io.draft){S.io.draft[k]=e.target.value;saveIo()}});
+function drillAns(v){const z=S.io,it=z.items[z.i];if(z.ans!==null||!v.trim())return;z.ans=v;it.ok=ioOk(it,v);if(it.ok)z.score++;render()}
+document.addEventListener('submit',e=>{if(e.target.dataset.ioform){e.preventDefault();drillAns(document.getElementById('dv').value)}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-io]');if(!b)return;const z=S.io;let top=true;
+ switch(b.dataset.io){
+ case'drill':{const m=b.dataset.m;newDrill();S.io.m=m;break}
+ case'p138':case'rand':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='p138'?P138:randCase());break;
+ case'resume':S.io=store.get('io',null);break;
+ case'exit':if(z&&z.k==='chart'&&z.step<=z.c.rows.length)saveIo();S.io=null;break;
+ case'pick':drillAns(b.dataset.v);return;
+ case'dnext':z.i++;z.ans=null;break;
+ case'check':checkStep();top=false;break;
+ case'cnext':z.step++;z.draft={};z.checked=null;if(z.step>z.c.rows.length)store.set('io',null);else saveIo();break}
+ render();if(top)toTop()});
 render();
 </script>
 </body>
