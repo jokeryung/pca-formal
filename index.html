@@ -64,6 +64,7 @@ select{font:inherit;width:100%;min-height:46px;padding:8px;border-radius:8px;bor
 nav button{min-width:0;padding:0 2px}
 .home{display:grid;gap:10px}.home button{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.home b{font-size:1.8rem;font-weight:400;line-height:1}.home strong{display:block;font-size:1.08rem}.home small{display:block;color:var(--mute);font-size:.86rem}
 .home b{flex:none;width:48px;height:48px;border-radius:12px;background:#0f6b63;display:grid;place-items:center}.home svg{width:28px;height:28px}
+.hwph{position:sticky;top:0;z-index:2;background:var(--bg);max-height:45vh;overflow:auto;border:1px solid var(--line);border-radius:10px;margin:10px 0}.hwph img{display:block;width:100%}.hwph.big{max-height:70vh}.hwph.big img{width:220%;max-width:none}.hwl{padding:4px 12px}.hwi{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.hwi:last-child{border-bottom:0}.hwi input{width:22px;height:22px;flex:none;margin-top:2px;accent-color:var(--accent)}
 .hw{position:relative;background:var(--warn-bg);border:2px solid #b34a08;border-radius:12px;padding:12px 14px 4px;margin:10px 0 14px}.hw h2{margin:4px 0 2px}.hw .tag{display:inline-block;background:#b34a08;color:#fff;font-size:.75rem;font-weight:700;border-radius:6px;padding:2px 8px}
 .home .hot{background:#b34a08;border-color:#b34a08;color:#fff;min-height:92px}.home .hot small{color:#fff}.home .hot b{background:#8a3704}
 nav{background:#0f5a53;border-top:0}nav button,nav button[aria-current=page]{color:#fff}nav button b{height:26px}nav button[aria-current=page]{background:#093f3a;box-shadow:inset 0 3px #fff}nav button:focus-visible{outline-color:#fff;outline-offset:-4px}
@@ -162,7 +163,9 @@ function flagText(){return Object.keys(S.flags).filter(i=>byId[i]).map(i=>{const
 function vFlags(){const ids=Object.keys(S.flags).filter(i=>byId[i]);
  app.innerHTML=`<h1>有問題嘅題目</h1>${ids.length?`<p class="mute sm">匯出清單之後貼返俾 Claude，就可以逐條改。</p><button class="btn" data-act="copy">複製清單</button><button class="btn ghost" data-act="dl">下載文字檔</button><p id="msg" class="sm" role="status"></p>`+ids.map(i=>{const q=byId[i],f=S.flags[i];return `<div class="card sm"><strong>${esc(i)}</strong> ${esc(q.question)}<br><span class="mute">${esc(q.page)}</span>${f.note?`<br>意見：${esc(f.note)}`:''}<br><button class="btn ghost small" data-act="flag-del" data-id="${i}">取消標記</button></div>`}).join(''):'<div class="card">未有標記。練習時撳「呢題有問題」就會出現喺呢度。</div>'}`}
 
-document.addEventListener('change',e=>{if(e.target.id==='fcs'){S.fcSec=e.target.value;S.fc=null;render()}});
+document.addEventListener('change',e=>{const z=S.io;if(z&&z.k==='hwchk'){if(e.target.id==='hwimg'&&e.target.files[0]){if(z.img)URL.revokeObjectURL(z.img);z.img=URL.createObjectURL(e.target.files[0]);render();return}
+ const k=e.target.dataset&&e.target.dataset.tk;if(k!==undefined){z.tick[k]=e.target.checked;const sc=document.getElementById('hwsc');if(sc)sc.textContent=hwScore();return}}
+ if(e.target.id==='fcs'){S.fcSec=e.target.value;S.fc=null;render()}});
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.tab){S.tab=b.dataset.tab;render();toTop();return}
  const act=b.dataset.act,z=S.quiz;if(!act)return;
@@ -266,6 +269,27 @@ function randCase(){
  const idx=shuffle([0,1,2,3,4,5,6,7]),liq=()=>mkLiq();outs.forEach((o,i)=>rows[idx[i]].out.push(o));
  const di=mkDiet(),di2=mkDiet();const sets=[[liq()],[di,liq()],[liq()],[di2,liq()],[liq()]];const order=[idx[6],idx[7],idx[0],idx[2],idx[4]];sets.forEach((s,i)=>rows[order[i]].in=s);
  return{title:'隨機新題',pt,rows}}
+function hwItems(c){const p=c.pt,I=[],g=(sec,t,ans,tip)=>I.push({sec,t,ans,tip});
+ [['hn','Hospital No',p.hn],['name','Name',p.name],['id','I.D. No',p.id],['sex','Sex',p.sex],['age','Age',p.age],['dept','Dept',p.dept],['team','Team',p.team],['wb','Ward/Bed',p.ward+'/'+p.bed]].forEach(h=>g('表頭',h[1],h[2]));
+ g('表頭','Date（Date/Time 欄第一格）','做功課當日日期，例如 '+p.date.replace(/-/g,'/'));
+ c.rows.forEach(r=>{const e=expectRow(r),alt=x=>x&&x.alt&&x.alt.length?'寫 '+x.alt[0]+' 都得':'';
+  if(r.in.length){g(r.t,'INTAKE 時間（Date/Time 欄）',r.t);r.in.forEach(x=>g(r.t,'By Mouth＋Amount（'+x.zh+'）',(x.name+'　'+x.amt).trim()))}
+  if(r.out.length){g(r.t,'OUTPUT Time 欄',r.t,r.in.length?'':'出口時間要喺 OUTPUT 嘅 Time 欄再寫一次，唔可以淨係寫喺最左邊');
+   if(e.v)g(r.t,'Vomit Nature＋Amount（'+e.v.zh+'）',(e.v.nat+'　'+e.v.amt).trim());if(e.u)g(r.t,'Urine（'+e.u.zh+'）',e.u.ans,alt(e.u));if(e.f)g(r.t,'Faeces（'+e.f.zh+'）',e.f.ans)}
+});
+ const t=totals(c);g('總數','Total Input',t.inT);g('總數','Total Output',t.outT);g('整體','每行內容同時間寫喺同一行，冇對錯格','');return I}
+function hwScore(){const z=S.io,n=z.items.length,k=Object.values(z.tick).filter(Boolean).length;return `${k} / ${n}`}
+function vHwChk(){const z=S.io,c=z.c;let last='',h='';
+ z.items.forEach((x,i)=>{if(x.sec!==last){h+=`${last?'</div>':''}<h3>${esc(x.sec)}</h3><div class="card sm hwl">`;last=x.sec}
+  h+=`<label class="hwi"><input type="checkbox" data-tk="${i}" ${z.tick[i]?'checked':''}><span>${esc(x.t)}${x.ans?`<br><strong>${esc(x.ans)}</strong>`:''}${x.tip?`<br><span class="mute">${esc(x.tip)}</span>`:''}</span></label>`});
+ app.innerHTML=`<div class="row"><span class="mute sm">${esc(c.title)}｜上載相片對答案</span><button class="flag" data-io="exit">返回</button></div>
+ <h1>對答案：功課 #1</h1><p class="mute sm">影低你喺紙上填好嘅出入量記錄表，上載後同下面嘅答案逐項對，寫啱就剔。相片只會喺你部機度顯示，唔會上載去任何地方。</p>
+ <label class="btn" style="display:block;text-align:center;cursor:pointer">${z.img?'換過另一張相':'影相／揀相'}<input id="hwimg" type="file" accept="image/*" hidden></label>
+ ${z.img?`<div class="hwph${z.big?' big':''}"><img src="${z.img}" alt="你上載嘅出入量記錄表"></div><button class="btn ghost" data-io="hwbig">${z.big?'縮細相片':'放大相片（可左右上下掃）'}</button>`:''}
+ <div class="card" style="text-align:center"><div class="score" id="hwsc">${hwScore()}</div><p class="mute sm">已剔嘅項目</p></div>
+ ${h}</div>
+ <h3>完整答案表格（可左右掃）</h3>${chartTable(c,c.rows.length)}
+ <p class="mute sm">大細楷、點同空格唔同唔緊要，意思同縮寫啱就得。唔肯定就問老師。</p><button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`}
 function newChart(c){S.io={k:'chart',c,step:-1,draft:{},done:[],checked:null,got:0,total:0};saveIo()}
 function saveIo(){store.set('io',S.io&&S.io.k==='chart'?S.io:null)}
 const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed'],['date','Date（日/月/年）']];
@@ -303,8 +327,9 @@ function vForm(){const z=S.io;
   <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
   <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
   <button class="link" data-io="p138"><span>教材原題</span><small>p138，答案 p139</small></button><button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
-  <div class="hw"><span class="tag">功課</span><h2>功課 #1</h2><p class="mute sm">病人：陳華（Chan Wah）｜8D 病房 10 號床｜由凌晨二時到晚上八時，共 14 個時間點</p><button class="btn" data-io="hw1">開始做功課 #1</button></div>
+  <div class="hw"><span class="tag">功課</span><h2>功課 #1</h2><p class="mute sm">病人：陳華（Chan Wah）｜8D 病房 10 號床｜由凌晨二時到晚上八時，共 14 個時間點</p><button class="btn" data-io="hw1">開始做功課 #1（網上填）</button><button class="btn ghost" data-io="hwchk">已經喺紙上填好？上載相片對答案</button></div>
   <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
+ if(z.k==='hwchk'){vHwChk();return}
  if(z.k==='drill'){
   if(z.i>=z.items.length){app.innerHTML=`<h1>縮寫練習完成</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.items.length}</div></div>${z.items.filter(x=>!x.ok).map(x=>`<div class="card sm">${esc(x.zh)}<br><strong>${esc(x.ans)}</strong> <span class="mute">${x.p}</span></div>`).join('')}<button class="btn" data-io="drill" data-m="${z.m}">再做 10 題（${z.m}）</button><button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`;return}
   const it=z.items[z.i],a=z.ans!==null,ok=a&&ioOk(it,z.ans);
@@ -328,6 +353,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-io]');if(!
  switch(b.dataset.io){
  case'drill':{const m=b.dataset.m;newDrill();S.io.m=m;break}
  case'p138':case'rand':case'hw1':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='p138'?P138:b.dataset.io==='hw1'?HW1():randCase());break;
+ case'hwchk':{const c=HW1();S.io={k:'hwchk',c,items:hwItems(c),tick:{},img:null,big:false};break}
+ case'hwbig':z.big=!z.big;render();return;
  case'resume':S.io=store.get('io',null);break;
  case'exit':if(z&&z.k==='chart'&&z.step<=z.c.rows.length)saveIo();S.io=null;break;
  case'pick':drillAns(b.dataset.v);return;
