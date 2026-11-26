@@ -322,9 +322,8 @@ function vForm(){const z=S.io;
  if(!z){const sv=store.get('io',null);
   app.innerHTML=`<h1>身體的液體出入量紀錄練習</h1><p class="mute sm">出入量記錄表 Intake and Output Chart（教材 p136–141）。按教材要求用英文填寫。</p>
   <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
-  <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
-  <button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
-  <p class="mute sm" style="margin:14px 0 2px">喺紙上做，再睇真表格樣答案：</p><button class="link" data-io="randpaper"><span>隨機新題（紙本）</span><small>真表格答案</small></button>
+  <h2>② 填整張表</h2><p class="mute sm">網上逐個時間填、即時對答案；或者喺紙上做完，再睇真表格答案。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
+  <p class="mute sm" style="margin:12px 0 2px">隨機新題（每次都唔同）：</p><div class="lv"><button data-io="rand">網上填<small>逐格即時對答案</small></button><button data-io="randpaper">紙本做<small>填完睇真表格答案</small></button></div>
   <div class="hw"><span class="tag">功課</span><h2>功課 #1</h2><p class="mute sm">病人：陳華（Chan Wah）｜8D 病房 10 號床｜由凌晨二時到晚上八時，共 14 個時間點</p><button class="btn" data-io="hw1">開始做功課 #1（網上填）</button><button class="btn ghost" data-io="hwdemo">睇示範答案（真表格樣）</button></div>
   <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
  if(z.k==='demo'){vDemo();return}
