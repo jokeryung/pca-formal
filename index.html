@@ -66,7 +66,7 @@ nav button{min-width:0;padding:0 2px}
 .home{display:grid;gap:10px}.home button{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.home b{font-size:1.8rem;font-weight:400;line-height:1}.home strong{display:block;font-size:1.08rem}.home small{display:block;color:var(--mute);font-size:.86rem}
 .home b{flex:none;width:48px;height:48px;border-radius:12px;background:#0f6b63;display:grid;place-items:center}.home svg{width:28px;height:28px}
 .shw{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;margin:10px 0;-webkit-overflow-scrolling:touch}
-.sheet{width:900px;background:#fff;color:#111;padding:16px;font-family:Arial,Helvetica,sans-serif;font-size:12px;box-sizing:border-box}
+.sheet{transform-origin:0 0;width:900px;background:#fff;color:#111;padding:16px;font-family:Arial,Helvetica,sans-serif;font-size:12px;box-sizing:border-box}
 .sheet .ink{font-family:'Caveat','Segoe Print','Bradley Hand',cursive;color:#1f3fa8;font-size:17px;line-height:1.05;font-weight:600}
 .sh-top{display:flex;border:2px solid #111;border-bottom:0}.sh-t{flex:1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;border-right:2px solid #111;padding:10px}
 .sh-lab{flex:1.2;padding:8px 12px;line-height:1.9}.sh-lab b{font-size:12px}.sh-lab .ink{margin-right:14px}
@@ -74,7 +74,8 @@ nav button{min-width:0;padding:0 2px}
 .sh th{font-weight:600;font-size:11.5px;text-align:center;height:24px}.sh td{height:30px}.sh .tot td{height:30px}
 .sh .dg{position:relative;background:linear-gradient(to top right,transparent calc(50% - 1px),#111 50%,transparent calc(50% + 1px))}.sh .d1{position:absolute;top:4px;left:6px}.sh .d2{position:absolute;bottom:4px;right:4px}
 .sh-daily{display:flex;border:2px solid #111;border-top:0;min-height:64px}.sh-daily>div{padding:6px 8px;border-right:1px solid #111}.sh-daily>div:last-child{border-right:0}
-.sh-daily .dl{width:62px}.sh-daily .di{flex:1.3}.sh-daily .do{flex:1.3}.sh-daily .db{flex:.8}.sheet .note{color:#b3362b;font-size:11px}
+.sh-daily .dl{width:62px}.sh-daily .di{flex:1.3}.sh-daily .do{flex:1.3}.sh-daily .db{flex:.8}.sheet.fit .sh th,.sheet.fit .sh td,.sheet.fit .sh-daily>div{border-width:2px}.sheet.fit .sh,.sheet.fit .sh-top,.sheet.fit .sh-daily,.sheet.fit .sh-t{border-width:3px}
+.sh td:first-child .ink{white-space:nowrap;font-size:15px}.sheet .note{color:#b3362b;font-size:11px}
 .hw{position:relative;background:var(--warn-bg);border:2px solid #b34a08;border-radius:12px;padding:12px 14px 4px;margin:10px 0 14px}.hw h2{margin:4px 0 2px}.hw .tag{display:inline-block;background:#b34a08;color:#fff;font-size:.75rem;font-weight:700;border-radius:6px;padding:2px 8px}
 .home .hot{background:#b34a08;border-color:#b34a08;color:#fff;min-height:92px}.home .hot small{color:#fff}.home .hot b{background:#8a3704}
 nav{background:#0f5a53;border-top:0}nav button,nav button[aria-current=page]{color:#fff}nav button b{height:26px}nav button[aria-current=page]{background:#093f3a;box-shadow:inset 0 3px #fff}nav button:focus-visible{outline-color:#fff;outline-offset:-4px}
@@ -296,7 +297,7 @@ function vHwDemo(){const z=S.io,c=z.c,p=c.pt,t=totals(c),H=x=>`<span class="ink"
  </div></div>
  <h2>最易錯嘅位</h2><div class="card sm"><ul><li>有出口嘅時間，要喺 OUTPUT 嘅 <b>Time</b> 欄再寫一次</li><li>09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空</li><li>16:00 同 20:00 排空尿袋：要寫 <b>(B.E.)</b></li><li>20:00 小便含血：寫 <b>with Blood</b></li><li>內容要同時間寫喺同一行</li><li>最後要填 Total Input 同 Total Output</li></ul><p class="mute">其他寫法：100ml (cloudy) 都得；B.E. 250ml 都得。</p></div>
  <button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`;
- const fit=()=>{const w=document.getElementById('shw'),sh=document.getElementById('sheet');if(w&&sh)sh.style.zoom=z.big?1:Math.min(1,(w.clientWidth-2)/sh.offsetWidth)};fit();window.onresize=fit}
+ const fit=()=>{const w=document.getElementById('shw'),sh=document.getElementById('sheet');if(!w||!sh)return;const k=z.big?1:Math.min(1,(w.clientWidth-2)/sh.offsetWidth);sh.classList.toggle('fit',k<1);sh.style.transform=k<1?`scale(${k})`:'';w.style.overflow=k<1?'hidden':'auto';w.style.height=k<1?Math.ceil(sh.offsetHeight*k)+2+'px':''};fit();window.onresize=fit;document.fonts&&document.fonts.ready.then(fit);setTimeout(fit,800)}
 function newChart(c){S.io={k:'chart',c,step:-1,draft:{},done:[],checked:null,got:0,total:0};saveIo()}
 function saveIo(){store.set('io',S.io&&S.io.k==='chart'?S.io:null)}
 const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed'],['date','Date（日/月/年）']];
