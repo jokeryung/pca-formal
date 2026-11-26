@@ -240,19 +240,6 @@ function newDrill(){const cats=shuffle(['大便','大便','大便','小便','小
 
 /* 整張表 */
 const L_=(zh,name,n,alt)=>({zh:`${zh} ${n} 毫升`,name,amt:n+'ml',ml:n,alt:alt||[]});
-const P138={title:'教材原題（p138，答案 p139）',pt:{zh:'Chan Siu Lan 陳少蘭',name:'Chan Siu Lan',sex:'F',id:'C245543(2)',age:'60',hn:'321620',ward:'D4',bed:'4',dept:'Surgical',team:'2',date:'15-2-2012'},rows:[
-{t:'05:30',in:[L_('奶','Milk',50),L_('清水','H2O',50,['Water'])],out:[{c:'f',zh:'中量黃色硬大便一次',ans:'Y.H.S.(M) x1'}]},
-{t:'06:30',in:[],out:[{c:'u',zh:'排出淡黃色小便 100 毫升',ans:'100ml',alt:['100ml (light yellow)','100ml (pale yellow)'],ml:100}]},
-{t:'07:00',in:[L_('麥皮','Oatmeal',150),L_('清水','H2O',50,['Water'])],out:[]},
-{t:'08:00',in:[],out:[{c:'v',zh:'嘔吐大量未消化食物一次',nat:'U.D. Food(L) x1',amt:''}]},
-{t:'10:30',in:[L_('湯','Soup',200)],out:[{c:'f',zh:'大量啡色爛大便一次含黏液',ans:'B.L.S.(L) x1 with Mucus'}]},
-{t:'13:00',in:[{zh:'糊餐一碗',name:'Puree',amt:'1 bowl',bowl:1},L_('清水','H2O',100,['Water'])],out:[{c:'u',zh:'排出茶色小便 150 毫升',ans:'150ml (tea colour)',ml:150}]},
-{t:'13:30',in:[],out:[{c:'u',zh:'排出茶色小便 200 毫升',ans:'200ml (tea colour)',ml:200}]},
-{t:'16:00',in:[L_('清水','H2O',50,['Water'])],out:[{c:'f',zh:'小量軟柏油大便一次',ans:'Tarry S.S.(S) x1'}]},
-{t:'17:30',in:[{zh:'胃餐半碗',name:'Gastric Diet',amt:'½ bowl',bowl:.5},{zh:'橙一個',name:'Orange',amt:'x 1',extra:'Orange x 1'},L_('清水','H2O',100,['Water'])],out:[]},
-{t:'18:30',in:[],out:[{c:'v',zh:'嘔吐黃綠色胃液一次 200 毫升',nat:'Y.G.F.',amt:'200ml',ml:200}]},
-{t:'19:00',in:[{zh:'不准飲食',name:'N.P.O.',amt:'',alt:['Nil By Mouth','Nil Per Oral']}],out:[{c:'u',zh:'失禁病人換尿片一次（中量茶色小便）',ans:'W.N.(M) x1 (tea colour)',alt:['Wet Napkin (M) x1 (tea colour)'],extra:'W.N.(M) x1'}]},
-{t:'20:00',in:[],out:[{c:'v',zh:'嘔吐啡色胃液一次 100 毫升',nat:'C.G.F.',amt:'100ml',ml:100},{c:'f',zh:'大量軟柏油大便一次',ans:'Tarry S.S.(L) x1'}]}],tips:['18:30 黃綠色胃液：教材 p139 寫 <b>Y.G.F.</b>','19:00 不准飲食：By Mouth 寫 <b>N.P.O.</b>','橙一個：寫 <b>Orange x 1</b>，Total Input 都要加埋']};
 const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan Wah 陳華',name:'Chan Wah',sex:'M',id:'G211734(5)',age:'65',hn:'44831286(a)',ward:'8D',bed:'10',dept:'Medical',team:'A',date:d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()},rows:[
 {t:'02:00',in:[],out:[{c:'u',zh:'濕片中量一次',ans:'W.N.(M) x1',alt:['Wet Napkin (M) x1'],extra:'W.N.(M) x1'}]},
 {t:'06:00',in:[],out:[{c:'u',zh:'排尿 100 毫升（混濁）',ans:'100ml (turbid)',alt:['100ml (cloudy)','100ml (turbid urine)','100ml (cloudy urine)'],ml:100},{c:'f',zh:'啡色軟狀大便小量一次',ans:'B.S.S.(S) x1'}]},
@@ -336,8 +323,8 @@ function vForm(){const z=S.io;
   app.innerHTML=`<h1>身體的液體出入量紀錄練習</h1><p class="mute sm">出入量記錄表 Intake and Output Chart（教材 p136–141）。按教材要求用英文填寫。</p>
   <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
   <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
-  <button class="link" data-io="p138"><span>教材原題</span><small>p138，答案 p139</small></button><button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
-  <p class="mute sm" style="margin:14px 0 2px">喺紙上做，再睇真表格樣答案：</p><button class="link" data-io="p138demo"><span>教材原題（紙本）</span><small>真表格答案</small></button><button class="link" data-io="randpaper"><span>隨機新題（紙本）</span><small>真表格答案</small></button>
+  <button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
+  <p class="mute sm" style="margin:14px 0 2px">喺紙上做，再睇真表格樣答案：</p><button class="link" data-io="randpaper"><span>隨機新題（紙本）</span><small>真表格答案</small></button>
   <div class="hw"><span class="tag">功課</span><h2>功課 #1</h2><p class="mute sm">病人：陳華（Chan Wah）｜8D 病房 10 號床｜由凌晨二時到晚上八時，共 14 個時間點</p><button class="btn" data-io="hw1">開始做功課 #1（網上填）</button><button class="btn ghost" data-io="hwdemo">睇示範答案（真表格樣）</button></div>
   <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
  if(z.k==='demo'){vDemo();return}
@@ -363,9 +350,8 @@ document.addEventListener('submit',e=>{if(e.target.dataset.ioform){e.preventDefa
 document.addEventListener('click',e=>{const b=e.target.closest('[data-io]');if(!b)return;const z=S.io;let top=true;
  switch(b.dataset.io){
  case'drill':{const m=b.dataset.m;newDrill();S.io.m=m;break}
- case'p138':case'rand':case'hw1':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='p138'?P138:b.dataset.io==='hw1'?HW1():randCase());break;
+ case'rand':case'hw1':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='hw1'?HW1():randCase());break;
  case'hwdemo':S.io={k:'demo',c:HW1(),big:false,show:true};break;
- case'p138demo':S.io={k:'demo',c:P138,big:false,show:false};break;
  case'randpaper':{const c=randCase();c.title='隨機新題（紙本）';S.io={k:'demo',c,big:false,show:false};break}
  case'dshow':z.show=true;render();return;
  case'cdemo':S.io={k:'demo',c:z.c,big:false,show:true};break;
