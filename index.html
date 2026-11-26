@@ -64,6 +64,7 @@ select{font:inherit;width:100%;min-height:46px;padding:8px;border-radius:8px;bor
 nav button{min-width:0;padding:0 2px}
 .home{display:grid;gap:10px}.home button{display:flex;align-items:center;gap:14px;text-align:left;width:100%;min-height:76px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}.home b{font-size:1.8rem;font-weight:400;line-height:1}.home strong{display:block;font-size:1.08rem}.home small{display:block;color:var(--mute);font-size:.86rem}
 .home b{flex:none;width:48px;height:48px;border-radius:12px;background:#0f6b63;display:grid;place-items:center}.home svg{width:28px;height:28px}
+.hw{position:relative;background:var(--warn-bg);border:2px solid #b34a08;border-radius:12px;padding:12px 14px 4px;margin:10px 0 14px}.hw h2{margin:4px 0 2px}.hw .tag{display:inline-block;background:#b34a08;color:#fff;font-size:.75rem;font-weight:700;border-radius:6px;padding:2px 8px}
 .home .hot{background:#b34a08;border-color:#b34a08;color:#fff;min-height:92px}.home .hot small{color:#fff}.home .hot b{background:#8a3704}
 nav{background:#0f5a53;border-top:0}nav button,nav button[aria-current=page]{color:#fff}nav button b{height:26px}nav button[aria-current=page]{background:#093f3a;box-shadow:inset 0 3px #fff}nav button:focus-visible{outline-color:#fff;outline-offset:-4px}
 .ff{display:block;margin:8px 0;min-width:0}.ff span{display:block;font-size:.82rem;color:var(--mute)}.ff input{width:100%;font:inherit;min-height:46px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);opacity:1}.ff input:focus{outline:3px solid var(--accent)}.ff input.ok{border-color:var(--ok);background:var(--ok-bg)}.ff input.bad{border-color:var(--bad);background:var(--bad-bg)}
@@ -239,6 +240,21 @@ const P138={title:'教材原題（p138，答案 p139）',pt:{zh:'Chan Siu Lan �
 {t:'18:30',in:[],out:[{c:'v',zh:'嘔吐黃綠色胃液一次 200 毫升',nat:'Y.G.F.',amt:'200ml',ml:200}]},
 {t:'19:00',in:[{zh:'不准飲食',name:'N.P.O.',amt:'',alt:['Nil By Mouth','Nil Per Oral']}],out:[{c:'u',zh:'失禁病人換尿片一次（中量茶色小便）',ans:'W.N.(M) x1 (tea colour)',alt:['Wet Napkin (M) x1 (tea colour)'],extra:'W.N.(M) x1'}]},
 {t:'20:00',in:[],out:[{c:'v',zh:'嘔吐啡色胃液一次 100 毫升',nat:'C.G.F.',amt:'100ml',ml:100},{c:'f',zh:'大量軟柏油大便一次',ans:'Tarry S.S.(L) x1'}]}]};
+const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan Wah 陳華',name:'Chan Wah',sex:'M',id:'G211734(5)',age:'65',hn:'44831286(a)',ward:'8D',bed:'10',dept:'Medical',team:'A',date:d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()},rows:[
+{t:'02:00',in:[],out:[{c:'u',zh:'濕片中量一次',ans:'W.N.(M) x1',alt:['Wet Napkin (M) x1'],extra:'W.N.(M) x1'}]},
+{t:'06:00',in:[],out:[{c:'u',zh:'排尿 100 毫升（混濁）',ans:'100ml (turbid)',alt:['100ml (cloudy)','100ml (turbid urine)','100ml (cloudy urine)'],ml:100},{c:'f',zh:'啡色軟狀大便小量一次',ans:'B.S.S.(S) x1'}]},
+{t:'07:00',in:[L_('粥','Congee',80),L_('清水','H2O',20,['Water'])],out:[]},
+{t:'09:30',in:[],out:[{c:'u',zh:'無小便',ans:'N.P.U.',alt:['Not Pass Urine']},{c:'f',zh:'綠色爛狀大便小量一次（含血）',ans:'G.L.S.(S) x1 with Blood'}]},
+{t:'10:00',in:[L_('奶','Milk',100)],out:[]},
+{t:'10:30',in:[],out:[{c:'v',zh:'嘔吐未消化食物 50 毫升',nat:'U.D. Food',amt:'50ml',ml:50}]},
+{t:'12:00',in:[{zh:'糊餐半碗',name:'Puree',amt:'½ bowl',bowl:.5},L_('湯','Soup',50)],out:[]},
+{t:'14:00',in:[],out:[{c:'u',zh:'濕片小量一次（茶色）',ans:'W.N.(S) x1 (tea colour)',alt:['Wet Napkin (S) x1 (tea colour)'],extra:'W.N.(S) x1'}]},
+{t:'15:00',in:[L_('粥水','RH2O',50)],out:[]},
+{t:'16:00',in:[],out:[{c:'u',zh:'插入導尿管連尿袋，排空尿袋 250 毫升',ans:'250ml (B.E.)',alt:['B.E. 250ml','Bag Empty 250ml'],ml:250}]},
+{t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'x 1',alt:['Full Diet 1 set'],extra:'Full Diet x 1'},L_('清水','H2O',50,['Water'])],out:[]},
+{t:'17:30',in:[],out:[{c:'v',zh:'嘔吐黃色胃液 50 毫升',nat:'Y.F.',amt:'50ml',ml:50}]},
+{t:'19:00',in:[L_('果汁','Juice',100),L_('清水','H2O',50,['Water'])],out:[]},
+{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) with Blood',alt:['200ml with Blood (B.E.)','B.E. 200ml with Blood','200ml (B.E.) (blood stained)','200ml (B.E.) blood stained'],ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}]}};
 function randCase(){
  const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
  const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
@@ -287,6 +303,7 @@ function vForm(){const z=S.io;
   <h2>① 縮寫練習（10 題）</h2><p class="mute sm">睇中文，寫返記錄表上嘅英文縮寫。每次題目都唔同。</p><div class="lv"><button data-io="drill" data-m="簡單">簡單<small>四揀一</small></button><button data-io="drill" data-m="正常">正常<small>自己打字</small></button></div>
   <h2>② 填整張表</h2><p class="mute sm">逐個時間填，每步即時對答案，最後計總出入量。</p>${sv?`<button class="btn" data-io="resume">繼續上次未完成嘅表</button>`:''}
   <button class="link" data-io="p138"><span>教材原題</span><small>p138，答案 p139</small></button><button class="link" data-io="rand"><span>隨機新題</span><small>每次都唔同</small></button>
+  <div class="hw"><span class="tag">功課</span><h2>功課 #1</h2><p class="mute sm">病人：陳華（Chan Wah）｜8D 病房 10 號床｜由凌晨二時到晚上八時，共 14 個時間點</p><button class="btn" data-io="hw1">開始做功課 #1</button></div>
   <h2>填表重點</h2><div class="card sm"><ul><li>時間用 24 小時制，例如下午一時寫 13:00</li><li>每次飲食、排便、嘔吐後即時記錄（p136）</li><li>人工哺飼及靜脈注射通常由護士負責記錄（p136）</li><li>每日總結算一次出入量；異常要立即通知主理護士（p136）</li></ul></div>${cheat(false)}`;return}
  if(z.k==='drill'){
   if(z.i>=z.items.length){app.innerHTML=`<h1>縮寫練習完成</h1><div class="card" style="text-align:center"><div class="score">${z.score} / ${z.items.length}</div></div>${z.items.filter(x=>!x.ok).map(x=>`<div class="card sm">${esc(x.zh)}<br><strong>${esc(x.ans)}</strong> <span class="mute">${x.p}</span></div>`).join('')}<button class="btn" data-io="drill" data-m="${z.m}">再做 10 題（${z.m}）</button><button class="btn ghost" data-io="exit">返回出入量紀錄練習</button>`;return}
@@ -310,7 +327,7 @@ document.addEventListener('submit',e=>{if(e.target.dataset.ioform){e.preventDefa
 document.addEventListener('click',e=>{const b=e.target.closest('[data-io]');if(!b)return;const z=S.io;let top=true;
  switch(b.dataset.io){
  case'drill':{const m=b.dataset.m;newDrill();S.io.m=m;break}
- case'p138':case'rand':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='p138'?P138:randCase());break;
+ case'p138':case'rand':case'hw1':if(store.get('io',null)&&!(z&&z.step>z.c?.rows.length)&&!confirm('開新一張表會取代未完成嗰張，確定？'))return;newChart(b.dataset.io==='p138'?P138:b.dataset.io==='hw1'?HW1():randCase());break;
  case'resume':S.io=store.get('io',null);break;
  case'exit':if(z&&z.k==='chart'&&z.step<=z.c.rows.length)saveIo();S.io=null;break;
  case'pick':drillAns(b.dataset.v);return;
