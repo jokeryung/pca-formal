@@ -251,11 +251,11 @@ const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan
 {t:'12:00',in:[{zh:'糊餐半碗',name:'Puree',amt:'½ bowl',bowl:.5},L_('湯','Soup',50)],out:[]},
 {t:'14:00',in:[],out:[{c:'u',zh:'濕片小量一次（茶色）',ans:'W.N.(S) x1 (tea colour)',alt:['Wet Napkin (S) x1 (tea colour)'],extra:'W.N.(S) x1'}]},
 {t:'15:00',in:[L_('粥水','RH2O',50)],out:[]},
-{t:'16:00',in:[],out:[{c:'u',zh:'插入導尿管連尿袋，排空尿袋 250 毫升',ans:'250ml (B.E.)',alt:['B.E. 250ml','Bag Empty 250ml'],ml:250}]},
+{t:'16:00',in:[],out:[{c:'u',zh:'插入導尿管連尿袋，排空尿袋 250 毫升',ans:'Foley to BSB 250ml (B.E.)',alt:['Foley to B.S.B. 250ml (BE)','Foley to bedside bag 250ml (B.E.)'],ml:250}]},
 {t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'x 1',alt:['Full Diet 1 set'],extra:'Full Diet x 1'},L_('清水','H2O',50,['Water'])],out:[]},
 {t:'17:30',in:[],out:[{c:'v',zh:'嘔吐黃色胃液 50 毫升',nat:'Y.F.',amt:'50ml',ml:50}]},
 {t:'19:00',in:[L_('果汁','Juice',100),L_('清水','H2O',50,['Water'])],out:[]},
-{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) with Blood',alt:['200ml with Blood (B.E.)','B.E. 200ml with Blood','200ml (B.E.) (blood stained)','200ml (B.E.) blood stained'],ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 同 20:00 排空尿袋：要寫 <b>(B.E.)</b>','20:00 小便含血：寫 <b>with Blood</b>'],alts:'其他寫法：100ml (cloudy) 都得；B.E. 250ml 都得。'}};
+{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) with Blood',alt:['200ml with Blood (B.E.)','B.E. 200ml with Blood','200ml (B.E.) (blood stained)','200ml (B.E.) blood stained'],ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','20:00 排空尿袋：要寫 <b>(B.E.)</b>','20:00 小便含血：寫 <b>with Blood</b>'],alts:'其他寫法：100ml (cloudy) 都得。'}};
 function randCase(){
  const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
  const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
@@ -315,7 +315,7 @@ function chartTable(c,upto){let h='';c.rows.slice(0,upto).forEach(r=>{const e=ex
  return `<div class="tw" tabindex="0" aria-label="出入量記錄表，可左右掃"><table><thead><tr><th rowspan="2">Date/ Time</th><th colspan="7">INTAKE</th><th colspan="6">OUTPUT</th></tr><tr><th>IV Fluids</th><th>Amount</th><th>Additive/ Dosage</th><th>Given by</th><th>Checked by</th><th>By Mouth/ <s>Tube Feed</s></th><th>Amount</th><th>Time</th><th>Vomit/ <s>Aspiration</s> Nature</th><th>Amount</th><th>Urine</th><th>Faeces</th><th>Drainage</th></tr></thead><tbody><tr><td>${c.pt.date.replace(/-/g,'/')}</td>${'<td></td>'.repeat(13)}</tr>${h}</tbody></table></div>`}
 const cheat=open=>`<details class="card sm" ${open?'open':''}><summary><strong>縮寫表（p137、p140–141）</strong></summary>
 <p><strong>大便</strong>＝顏色＋質＋S（Stool）＋（量）x 次數<br>顏色：Y 黃、B 啡、G 綠；Tarry 柏油便<br>質：H 硬、S 軟、L 爛、W 水狀<br>量：L 大量、M 中量、S 小量<br>含黏液 with Mucus；含血 with Blood；冇大便 BNO<br>例：中量啡色軟大便一次＝B.S.S.(M) x1</p>
-<p><strong>小便</strong>：__ml；茶色 (tea colour)<br>W.N. 換尿片；PU 如廁；N.P.U. 冇排小便<br>B.E. 已清倒尿袋；B.N.E. 未清倒，下次要減回前量</p>
+<p><strong>小便</strong>：__ml；茶色 (tea colour)<br>W.N. 換尿片；PU 如廁；N.P.U. 冇排小便<br>B.E. 已清倒尿袋；B.N.E. 未清倒，下次要減回前量<br>Foley to BSB：插導尿管接床邊尿袋（Bedside Bag）</p>
 <p><strong>嘔吐</strong>：Y.F. 黃色、G.F. 綠色、C.G.F. 咖啡渣樣、U.D. Food 未消化食物<br>黃綠色胃液：p139 範例寫 Y.G.F.<br>量唔到：縮寫＋（量）x 次數；量到：縮寫＋ml</p>
 <p><strong>入口</strong>：H2O 清水、RH2O 粥水、Soup 湯、Juice 果汁、Milk 奶、Oatmeal 麥皮、Congee 粥、Rice 飯、Noodles 麵、Puree 糊餐、Gastric Diet 胃餐、Minced Diet 免治餐、Full Diet 正餐<br>1 bowl 一碗、3/4 bowl 大半碗、1/2 bowl 半碗<br>N.P.O. 不准飲食；Refused Diet 拒絕進食</p>
 <p class="mute">教材註明：各醫院嘅縮寫可能有所修改。</p></details>`;
