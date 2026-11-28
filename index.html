@@ -241,32 +241,36 @@ function newDrill(){const cats=shuffle(['大便','大便','大便','小便','小
 
 /* 整張表 */
 const L_=(zh,name,n,alt)=>({zh:`${zh} ${n} 毫升`,name,amt:n+'ml',ml:n,alt:alt||[]});
-const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan Wah 陳華',name:'Chan Wah',sex:'M',id:'G211734(5)',age:'65',hn:'44831286(a)',ward:'8D',bed:'10',dept:'Medical',team:'A',date:d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()},rows:[
-{t:'02:00',in:[],out:[{c:'u',zh:'濕片中量一次',ans:'W.N.(M) x1',alt:['Wet Napkin (M) x1'],extra:'W.N.(M) x1'}]},
-{t:'06:00',in:[],out:[{c:'u',zh:'排尿 100 毫升（混濁）',ans:'100ml (turbid)',alt:['100ml (cloudy)','100ml (turbid urine)','100ml (cloudy urine)'],ml:100},{c:'f',zh:'啡色軟狀大便小量一次',ans:'B.S.S.(S) x1'}]},
-{t:'07:00',in:[L_('粥','Congee',80),L_('清水','H2O',20,['Water'])],out:[]},
-{t:'09:30',in:[],out:[{c:'u',zh:'無小便',ans:'N.P.U.',alt:['Not Pass Urine']},{c:'f',zh:'綠色爛狀大便小量一次（含血）',ans:'G.L.S.(S) x1 with Blood'}]},
-{t:'10:00',in:[L_('奶','Milk',100)],out:[]},
-{t:'10:30',in:[],out:[{c:'v',zh:'嘔吐未消化食物 50 毫升',nat:'U.D. Food',amt:'50ml',ml:50}]},
-{t:'12:00',in:[{zh:'糊餐半碗',name:'Puree Diet',amt:'½ bowl',bowl:.5},L_('湯','Soup',50)],out:[]},
-{t:'14:00',in:[],out:[{c:'u',zh:'濕片小量一次（茶色）',ans:'W.N.(S) x1 (tea colour)',alt:['Wet Napkin (S) x1 (tea colour)'],extra:'W.N.(S) x1'}]},
-{t:'15:00',in:[L_('粥水','RH2O',50)],out:[]},
-{t:'16:00',in:[],out:[{c:'u',zh:'插入導尿管連尿袋，排空尿袋 250 毫升',ans:'Foley to BSB 250ml (B.E.)',alt:['Foley to B.S.B. 250ml (BE)','Foley to bedside bag 250ml (B.E.)'],ml:250}]},
-{t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'1 set',extra:'Full Diet 1 set'},L_('清水','H2O',50,['Water'])],out:[]},
-{t:'17:30',in:[],out:[{c:'v',zh:'嘔吐黃色胃液 50 毫升',nat:'Y.F.',amt:'50ml',ml:50}]},
-{t:'19:00',in:[L_('果汁','Juice',100),L_('清水','H2O',50,['Water'])],out:[]},
-{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) (BS)',ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','17:00 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）','20:00 排空尿袋、尿有血：寫 <b>200ml (B.E.) (BS)</b>（BS＝尿有血）','12:00 糊餐：寫 <b>Puree Diet</b>｜<b>½ bowl</b>（有「餐」字嘅都要寫埋 Diet）','一格寫唔夠，可以繼續寫落下一格','Total Input 要寫返餐類名，同表入面一樣格式：<b>Full Diet 1 set + Puree Diet ½ bowl + 500ml</b>（唔使寫 x）','Total Output 次序：排尿（PU）／濕片（WN）次數 → 排便（BO）次數 → 所有 ml → 其他（例如嘔吐）：<b>WN x2 + BO x3 + 650ml</b>'],alts:'其他寫法：100ml (cloudy) 都得。'}};
+/* 功課 #1 模板：測驗用同一批項目，只係時間同份量唔同 */
+function hwCase(title,pt,v){const t=v.t,Q=q=>q[0],C=q=>q[1];
+ const rows=[
+ {t:t[0],in:[],out:[{c:'u',zh:`濕片${Q(v.wn1)}一次`,ans:`W.N.(${C(v.wn1)}) x1`,alt:[`Wet Napkin (${C(v.wn1)}) x1`],extra:`W.N.(${C(v.wn1)}) x1`}]},
+ {t:t[1],in:[],out:[{c:'u',zh:`排尿 ${v.u1} 毫升（混濁）`,ans:`${v.u1}ml (turbid)`,alt:[`${v.u1}ml (cloudy)`,`${v.u1}ml (turbid urine)`,`${v.u1}ml (cloudy urine)`],ml:v.u1},{c:'f',zh:`啡色軟狀大便${Q(v.f1)}一次`,ans:`B.S.S.(${C(v.f1)}) x1`}]},
+ {t:t[2],in:[L_('粥','Congee',v.cg),L_('清水','H2O',v.h1,['Water'])],out:[]},
+ {t:t[3],in:[],out:[{c:'u',zh:'無小便',ans:'N.P.U.',alt:['Not Pass Urine']},{c:'f',zh:`綠色爛狀大便${Q(v.f2)}一次（含血）`,ans:`G.L.S.(${C(v.f2)}) x1 with Blood`}]},
+ {t:t[4],in:[L_('奶','Milk',v.mk)],out:[]},
+ {t:t[5],in:[],out:[{c:'v',zh:`嘔吐未消化食物 ${v.ud} 毫升`,nat:'U.D. Food',amt:v.ud+'ml',ml:v.ud}]},
+ {t:t[6],in:[{zh:'糊餐'+v.bw[0],name:'Puree Diet',amt:bowlTxt(v.bw[1])+' bowl',bowl:v.bw[1]},L_('湯','Soup',v.sp)],out:[]},
+ {t:t[7],in:[],out:[{c:'u',zh:`濕片${Q(v.wn2)}一次（茶色）`,ans:`W.N.(${C(v.wn2)}) x1 (tea colour)`,alt:[`Wet Napkin (${C(v.wn2)}) x1 (tea colour)`],extra:`W.N.(${C(v.wn2)}) x1`}]},
+ {t:t[8],in:[L_('粥水','RH2O',v.rh)],out:[]},
+ {t:t[9],in:[],out:[{c:'u',zh:`插入導尿管連尿袋，排空尿袋 ${v.fo} 毫升`,ans:`Foley to BSB ${v.fo}ml (B.E.)`,alt:[`Foley to B.S.B. ${v.fo}ml (BE)`,`Foley to bedside bag ${v.fo}ml (B.E.)`],ml:v.fo}]},
+ {t:t[10],in:[{zh:'正餐一套',name:'Full Diet',amt:'1 set',extra:'Full Diet 1 set'},L_('清水','H2O',v.h2,['Water'])],out:[]},
+ {t:t[11],in:[],out:[{c:'v',zh:`嘔吐黃色胃液 ${v.yf} 毫升`,nat:'Y.F.',amt:v.yf+'ml',ml:v.yf}]},
+ {t:t[12],in:[L_('果汁','Juice',v.ju),L_('清水','H2O',v.h3,['Water'])],out:[]},
+ {t:t[13],in:[],out:[{c:'u',zh:`排空尿袋 ${v.be} 毫升（含血）`,ans:`${v.be}ml (B.E.) (BS)`,ml:v.be},{c:'f',zh:`黃色水狀大便${Q(v.f3)}一次`,ans:`Y.W.S.(${C(v.f3)}) x1`}]}];
+ const c={title,pt,rows},T=totals(c),h=x=>x.replace(':','');
+ c.tips=[`${h(t[3])} 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空`,`${h(t[6])} 糊餐：寫 <b>Puree Diet</b>｜<b>${bowlTxt(v.bw[1])} bowl</b>（有「餐」字嘅都要寫埋 Diet）`,`${h(t[9])} 插導尿管連尿袋：寫 <b>Foley to BSB ${v.fo}ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）`,`${h(t[10])} 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）`,`${h(t[13])} 排空尿袋、尿有血：寫 <b>${v.be}ml (B.E.) (BS)</b>（BS＝尿有血）`,'一格寫唔夠，可以繼續寫落下一格',`Total Input 要寫返餐類名，同表入面一樣格式：<b>${esc(T.inT)}</b>（唔使寫 x）`,`Total Output 次序：排尿（PU）／濕片（WN）次數 → 排便（BO）次數 → 所有 ml → 其他（例如嘔吐）：<b>${esc(T.outT)}</b>`];
+ c.alts=`其他寫法：${v.u1}ml (cloudy) 都得。`;return c}
+const today=()=>{const d=new Date();return d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()};
+const QM=k=>QTY.find(q=>q[1]===k);
+const HW1=()=>hwCase('功課 #1：陳華',{zh:'Chan Wah 陳華',name:'Chan Wah',sex:'M',id:'G211734(5)',age:'65',hn:'44831286(a)',ward:'8D',bed:'10',dept:'Medical',team:'A',date:today()},
+ {t:['02:00','06:00','07:00','09:30','10:00','10:30','12:00','14:00','15:00','16:00','17:00','17:30','19:00','20:00'],wn1:QM('M'),u1:100,f1:QM('S'),cg:80,h1:20,f2:QM('S'),mk:100,ud:50,bw:['半碗',.5],sp:50,wn2:QM('S'),rh:50,fo:250,h2:50,yf:50,ju:100,h3:50,be:200,f3:QM('M')});
 function randCase(){
- const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
- const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
- const slots=[];for(let h=6;h<=20;h++)for(const m of['00','30'])slots.push(String(h).padStart(2,'0')+':'+m);
- const ts=shuffle(slots).slice(0,8).sort(),rows=ts.map(t=>({t,in:[],out:[]}));
- const fix=o=>{if(!o.c)return o;if(o.c==='u'&&!o.ml)o.extra=o.ans;return o};
- const until=(mk,ok)=>{let x;do{x=mk()}while(!ok(x));return x};
- const outs=[{...mkStool(),c:'f'},{...mkStool(),c:'f'},{...until(mkUrine,x=>x.ml),c:'u'},{...until(mkUrine,x=>x.ml),c:'u'},{...until(mkUrine,x=>!x.ml),c:'u'},{...mkVomit(),c:'v'}].map(fix);
- const idx=shuffle([0,1,2,3,4,5,6,7]),liq=()=>mkLiq();outs.forEach((o,i)=>rows[idx[i]].out.push(o));
- const di=mkDiet(),di2=mkDiet();const sets=[[liq()],[di,liq()],[liq()],[di2,liq()],[liq()]];const order=[idx[6],idx[7],idx[0],idx[2],idx[4]];sets.forEach((s,i)=>rows[order[i]].in=s);
- return{title:'隨機新題',pt,rows}}
+ const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F'],['Chan Tai Man','陳大文','M'],['Lam Siu Fong','林小芳','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
+ const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','C','D','G','K'])+d(6)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:d(8)+'('+rnd(['a','b','c'])+')',ward:(1+(Math.random()*12|0))+rnd(['A','B','C','D']),bed:String(1+(Math.random()*30|0)),dept:rnd(['Medical','Surgical']),team:rnd(['A','B','C']),date:today()};
+ const slots=[];for(let h=1;h<=22;h++)for(const m of['00','30'])slots.push(String(h).padStart(2,'0')+':'+m);
+ const m=(a,b)=>a+10*(Math.random()*((b-a)/10+1)|0);
+ return hwCase('隨機新題',pt,{t:shuffle(slots).slice(0,14).sort(),wn1:rnd(QTY),u1:m(50,400),f1:rnd(QTY),cg:m(50,250),h1:m(20,150),f2:rnd(QTY),mk:m(50,250),ud:m(20,200),bw:rnd(BOWL),sp:m(30,200),wn2:rnd(QTY),rh:m(30,200),fo:m(100,500),h2:m(30,200),yf:m(20,200),ju:m(50,250),h3:m(30,200),be:m(100,400),f3:rnd(QTY)})}
 function vDemo(){const z=S.io,c=z.c,p=c.pt,t=totals(c),H=x=>`<span class="ink">${esc(x)}</span>`,dp=p.date.split('-'),dt=dp[0]+'/'+dp[1]+'/'+dp[2].slice(-2);
  const tr=(a)=>`<tr>${a.map(x=>`<td>${x?H(x):''}</td>`).join('')}</tr>`;let rows=tr([dt,'','','','','','','','','','','','','']),n=1;
  c.rows.forEach(r=>{const e=expectRow(r),k=Math.max(1,r.in.length);for(let i=0;i<k;i++){const x=r.in[i],o=i===0&&r.out.length;
