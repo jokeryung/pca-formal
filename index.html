@@ -252,10 +252,10 @@ const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan
 {t:'14:00',in:[],out:[{c:'u',zh:'濕片小量一次（茶色）',ans:'W.N.(S) x1 (tea colour)',alt:['Wet Napkin (S) x1 (tea colour)'],extra:'W.N.(S) x1'}]},
 {t:'15:00',in:[L_('粥水','RH2O',50)],out:[]},
 {t:'16:00',in:[],out:[{c:'u',zh:'插入導尿管連尿袋，排空尿袋 250 毫升',ans:'Foley to BSB 250ml (B.E.)',alt:['Foley to B.S.B. 250ml (BE)','Foley to bedside bag 250ml (B.E.)'],ml:250}]},
-{t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'x 1',alt:['Full Diet 1 set'],extra:'Full Diet x 1'},L_('清水','H2O',50,['Water'])],out:[]},
+{t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'1 set',extra:'Full Diet 1 set'},L_('清水','H2O',50,['Water'])],out:[]},
 {t:'17:30',in:[],out:[{c:'v',zh:'嘔吐黃色胃液 50 毫升',nat:'Y.F.',amt:'50ml',ml:50}]},
 {t:'19:00',in:[L_('果汁','Juice',100),L_('清水','H2O',50,['Water'])],out:[]},
-{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) with Blood',alt:['200ml with Blood (B.E.)','B.E. 200ml with Blood','200ml (B.E.) (blood stained)','200ml (B.E.) blood stained'],ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','20:00 排空尿袋：要寫 <b>(B.E.)</b>','20:00 小便含血：寫 <b>with Blood</b>'],alts:'其他寫法：100ml (cloudy) 都得。'}};
+{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) with Blood',alt:['200ml with Blood (B.E.)','B.E. 200ml with Blood','200ml (B.E.) (blood stained)','200ml (B.E.) blood stained'],ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','17:00 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）','20:00 排空尿袋：要寫 <b>(B.E.)</b>','20:00 小便含血：寫 <b>with Blood</b>'],alts:'其他寫法：100ml (cloudy) 都得。'}};
 function randCase(){
  const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
  const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
