@@ -255,7 +255,7 @@ const HW1=()=>{const d=new Date();return{title:'功課 #1：陳華',pt:{zh:'Chan
 {t:'17:00',in:[{zh:'正餐一套',name:'Full Diet',amt:'1 set',extra:'Full Diet 1 set'},L_('清水','H2O',50,['Water'])],out:[]},
 {t:'17:30',in:[],out:[{c:'v',zh:'嘔吐黃色胃液 50 毫升',nat:'Y.F.',amt:'50ml',ml:50}]},
 {t:'19:00',in:[L_('果汁','Juice',100),L_('清水','H2O',50,['Water'])],out:[]},
-{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) (BS)',ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','17:00 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）','20:00 排空尿袋、尿有血：寫 <b>200ml (B.E.) (BS)</b>（BS＝尿有血）','一格寫唔夠，可以繼續寫落下一格'],alts:'其他寫法：100ml (cloudy) 都得。'}};
+{t:'20:00',in:[],out:[{c:'u',zh:'排空尿袋 200 毫升（含血）',ans:'200ml (B.E.) (BS)',ml:200},{c:'f',zh:'黃色水狀大便中量一次',ans:'Y.W.S.(M) x1'}]}],tips:['09:30 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空','16:00 插導尿管連尿袋：寫 <b>Foley to BSB 250ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）','17:00 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）','20:00 排空尿袋、尿有血：寫 <b>200ml (B.E.) (BS)</b>（BS＝尿有血）','一格寫唔夠，可以繼續寫落下一格','Total Input 要寫返餐類名，同表入面一樣格式：<b>Full Diet 1 set + Puree Diet x ½ bowl + 500ml</b>'],alts:'其他寫法：100ml (cloudy) 都得。'}};
 function randCase(){
  const nm=rnd([['Wong Mei Fong','黃美芳','F'],['Lee Kwok Keung','李國強','M'],['Cheung Siu Ming','張小明','M'],['Ho Lai Wah','何麗華','F']]);const d=n=>Array.from({length:n},()=>Math.random()*10|0).join('');
  const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','B','C','D'])+'1'+d(5)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:'3'+d(5),ward:rnd(['A','B','C','D'])+(1+(Math.random()*6|0)),bed:String(1+(Math.random()*20|0)),dept:rnd(['Surgical','Medical']),team:rnd(['1','2','3']),date:(1+(Math.random()*28|0))+'-'+(1+(Math.random()*12|0))+'-2026'};
@@ -293,8 +293,8 @@ function saveIo(){store.set('io',S.io&&S.io.k==='chart'?S.io:null)}
 const HF=[['hn','Hospital No'],['name','Name（英文）'],['id','I.D. No'],['sex','Sex（F／M）'],['age','Age'],['dept','Dept'],['team','Team'],['wb','Ward/Bed'],['date','Date（日/月/年）']];
 const ioDate=v=>(String(v||'').normalize('NFKC').match(/\d+/g)||[]).map(Number).join('/');
 const inOk=(x,n,a)=>[x.name,...(x.alt||[])].some(m=>ionorm(m+' '+x.amt)===ionorm(n+' '+a));
-function totals(c){let i=0,o=0,b=0,bo=0,ex=[],ox=[];c.rows.forEach(r=>{r.in.forEach(x=>{i+=x.ml||0;b+=x.bowl||0;if(x.extra)ex.push(x.extra)});r.out.forEach(x=>{o+=x.ml||0;if(x.c==='f')bo++;if(x.c==='v'&&!x.ml)ox.push(x.nat);if(x.extra)ox.push(x.extra)})});
- return{i,o,b,bo,inT:[...ex,`Diet x ${bowlTxt(b)} bowl`,i+'ml'].join(' + '),outT:[...ox,o+'ml','B.O. x'+bo].join(' + ')}}
+function totals(c){let i=0,o=0,b=0,bo=0,ex=[],ox=[],dg={};c.rows.forEach(r=>{r.in.forEach(x=>{i+=x.ml||0;b+=x.bowl||0;if(x.bowl){const k=x.name==='Puree'?'Puree Diet':x.name;dg[k]=(dg[k]||0)+x.bowl}if(x.extra)ex.push(x.extra)});r.out.forEach(x=>{o+=x.ml||0;if(x.c==='f')bo++;if(x.c==='v'&&!x.ml)ox.push(x.nat);if(x.extra)ox.push(x.extra)})});
+ return{i,o,b,bo,inT:[...ex,...Object.entries(dg).map(([k,v])=>`${k} x ${bowlTxt(v)} bowl`),i+'ml'].join(' + '),outT:[...ox,o+'ml','B.O. x'+bo].join(' + ')}}
 function expectRow(r){const g=c=>r.out.find(x=>x.c===c),v=g('v'),u=g('u'),f=g('f');return{v,u,f}}
 function checkStep(){const z=S.io,c=z.c,d=z.draft,R=[];const add=(k,label,ok,ans)=>R.push({k,label,ok,ans});
  if(z.step===-1){const p=c.pt,E={...p,wb:p.ward+'/'+p.bed};HF.forEach(h=>{const v=d[h[0]]||'';let ok=ionorm(v)===ionorm(E[h[0]]);if(h[0]==='sex')ok=/^(F|FEMALE)$/i.test(v.trim())?p.sex==='F':/^(M|MALE)$/i.test(v.trim())&&p.sex==='M';if(h[0]==='date'){ok=ioDate(v)===ioDate(E.date);add('date','Date',ok,ioDate(E.date));return}add(h[0],h[1],ok,E[h[0]])})}
