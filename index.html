@@ -258,8 +258,9 @@ function hwCase(title,pt,v){const t=v.t,Q=q=>q[0],C=q=>q[1];
  {t:t[11],in:[],out:[{c:'v',zh:`嘔吐黃色胃液 ${v.yf} 毫升`,nat:'Y.F.',amt:v.yf+'ml',ml:v.yf}]},
  {t:t[12],in:[L_('果汁','Juice',v.ju),L_('清水','H2O',v.h3,['Water'])],out:[]},
  {t:t[13],in:[],out:[{c:'u',zh:`排空尿袋 ${v.be} 毫升（含血）`,ans:`${v.be}ml (B.E.) (BS)`,ml:v.be},{c:'f',zh:`黃色水狀大便${Q(v.f3)}一次`,ans:`Y.W.S.(${C(v.f3)}) x1`}]}];
+ const R=rows.slice();if(v.order){rows.length=0;v.order.forEach(i=>rows.push(R[i]))}rows.forEach((r,k)=>r.t=v.t[k]);
  const c={title,pt,rows},T=totals(c),h=x=>x.replace(':','');
- c.tips=[`${h(t[3])} 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空`,`${h(t[6])} 糊餐：寫 <b>Puree Diet</b>｜<b>${bowlTxt(v.bw[1])} bowl</b>（有「餐」字嘅都要寫埋 Diet）`,`${h(t[9])} 插導尿管連尿袋：寫 <b>Foley to BSB ${v.fo}ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）`,`${h(t[10])} 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）`,`${h(t[13])} 排空尿袋、尿有血：寫 <b>${v.be}ml (B.E.) (BS)</b>（BS＝尿有血）`,'一格寫唔夠，可以繼續寫落下一格',`Total Input 要寫返餐類名，同表入面一樣格式：<b>${esc(T.inT)}</b>（唔使寫 x）`,`Total Output 次序：排尿（PU）／濕片（WN）次數 → 排便（BO）次數 → 所有 ml → 其他（例如嘔吐）：<b>${esc(T.outT)}</b>`];
+ c.tips=[`${h(R[3].t)} 無小便：Urine 欄要寫 <b>N.P.U.</b>，唔可以留空`,`${h(R[6].t)} 糊餐：寫 <b>Puree Diet</b>｜<b>${bowlTxt(v.bw[1])} bowl</b>（有「餐」字嘅都要寫埋 Diet）`,`${h(R[9].t)} 插導尿管連尿袋：寫 <b>Foley to BSB ${v.fo}ml (B.E.)</b>（BSB＝Bedside Bag 床邊尿袋）`,`${h(R[10].t)} 正餐一套：Amount 寫 <b>1 set</b>（唔使寫 x）`,`${h(R[13].t)} 排空尿袋、尿有血：寫 <b>${v.be}ml (B.E.) (BS)</b>（BS＝尿有血）`,'一格寫唔夠，可以繼續寫落下一格',`Total Input 要寫返餐類名，同表入面一樣格式：<b>${esc(T.inT)}</b>（唔使寫 x）`,`Total Output 次序：排尿（PU）／濕片（WN）次數 → 排便（BO）次數 → 所有 ml → 其他（例如嘔吐）：<b>${esc(T.outT)}</b>`];
  c.alts=`其他寫法：${v.u1}ml (cloudy) 都得。`;return c}
 const today=()=>{const d=new Date();return d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()};
 const QM=k=>QTY.find(q=>q[1]===k);
@@ -270,7 +271,8 @@ function randCase(){
  const pt={zh:nm[0]+' '+nm[1],name:nm[0],sex:nm[2],id:rnd(['A','C','D','G','K'])+d(6)+'('+(Math.random()*10|0)+')',age:String(50+(Math.random()*40|0)),hn:d(8)+'('+rnd(['a','b','c'])+')',ward:(1+(Math.random()*12|0))+rnd(['A','B','C','D']),bed:String(1+(Math.random()*30|0)),dept:rnd(['Medical','Surgical']),team:rnd(['A','B','C']),date:today()};
  const slots=[];for(let h=1;h<=22;h++)for(const m of['00','30'])slots.push(String(h).padStart(2,'0')+':'+m);
  const m=(a,b)=>a+10*(Math.random()*((b-a)/10+1)|0);
- return hwCase('隨機新題',pt,{t:shuffle(slots).slice(0,14).sort(),wn1:rnd(QTY),u1:m(50,400),f1:rnd(QTY),cg:m(50,250),h1:m(20,150),f2:rnd(QTY),mk:m(50,250),ud:m(20,200),bw:rnd(BOWL),sp:m(30,200),wn2:rnd(QTY),rh:m(30,200),fo:m(100,500),h2:m(30,200),yf:m(20,200),ju:m(50,250),h3:m(30,200),be:m(100,400),f3:rnd(QTY)})}
+ let order;do{order=shuffle([...Array(14).keys()])}while(!(Math.max(...[0,1,3,7].map(i=>order.indexOf(i)))<order.indexOf(9)&&order.indexOf(9)<order.indexOf(13)));
+ return hwCase('隨機新題',pt,{order,t:shuffle(slots).slice(0,14).sort(),wn1:rnd(QTY),u1:m(50,400),f1:rnd(QTY),cg:m(50,250),h1:m(20,150),f2:rnd(QTY),mk:m(50,250),ud:m(20,200),bw:rnd(BOWL),sp:m(30,200),wn2:rnd(QTY),rh:m(30,200),fo:m(100,500),h2:m(30,200),yf:m(20,200),ju:m(50,250),h3:m(30,200),be:m(100,400),f3:rnd(QTY)})}
 function vDemo(){const z=S.io,c=z.c,p=c.pt,t=totals(c),H=x=>`<span class="ink">${esc(x)}</span>`,dp=p.date.split('-'),dt=dp[0]+'/'+dp[1]+'/'+dp[2].slice(-2);
  const tr=(a)=>`<tr>${a.map(x=>`<td>${x?H(x):''}</td>`).join('')}</tr>`;let rows=tr([dt,'','','','','','','','','','','','','']),n=1;
  c.rows.forEach(r=>{const e=expectRow(r),k=Math.max(1,r.in.length);for(let i=0;i<k;i++){const x=r.in[i],o=i===0&&r.out.length;
